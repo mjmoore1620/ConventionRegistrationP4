@@ -27,21 +27,23 @@ namespace ConventionRegistration
             //Console.WriteLine(MenuString());
             //timeInLine();
 
-            //this is a to test the average of NegExp()
-            List<double> nums = new List<double>(1000);
-            for (int i = 0; i < 9999; i++)
-            {
-                nums.Add(Poisson(300));
-                //nums.Add(NegExp(3000));
-            }
+            ////this is a to test the average of NegExp()
+            //List<double> nums = new List<double>(1000);
+            //for (int i = 0; i < 9999; i++)
+            //{
+            //    nums.Add(Poisson(300));
+            //    //nums.Add(NegExp(3000));
+            //}
 
-            double sum = 0;
-            foreach (var num in nums)
-            {
-                sum += num;
-            }
+            //double sum = 0;
+            //foreach (var num in nums)
+            //{
+            //    sum += num;
+            //}
 
-            Console.WriteLine(sum / 9999.0);
+            //Console.WriteLine(sum / 9999.0);
+
+            MainMenu();
 
             
 
@@ -60,24 +62,79 @@ namespace ConventionRegistration
                        + "\t4. Set the expected checkout duration\n"
                        + "\t5. Run the simulation\n"
                        + "\t6. End the program\n\n"
-                       + "\t  Type the number of your choice from the menu:";
+                       + "\t  Type the number of your choice from the menu: ";
             
             return menuString;
         }
 
         private static void MainMenu()
         {
-            bool menuExit = false;
+            //must be true to exit menu
+            bool exitMenu = false;
+
+            //loops main menu
+            do
+            {
+                //prints menu options to user
+                Console.Write(MenuString());
+                //user menuchoice input
+                string MenuChoice = Console.ReadLine();
+
+                //main menu structure
+                switch (MenuChoice)
+                {
+                    case "1":              
+                        Console.Clear();
+                        Console.Write("  How many registrants are expected to be served in a day?: ");
+                        Console.ReadLine();
+                        //setRegistrantTotal(Console.ReadLine());
+                        Console.Clear();
+                        break;
+
+                    case "2":              
+                        Console.Clear();
+                        Console.Write("  How many hours will registration be open?: ");
+                        Console.ReadLine();
+                        //setConventionDuration(Console.ReadLine());
+                        Console.Clear();
+                        break;
+
+                    case "3":              
+                        Console.Clear();
+                        Console.Write("  How many registration lines are to be simulated?: ");
+                        Console.ReadLine();
+                        //setLineCount(Console.ReadLine());
+                        Console.Clear();
+                        break;
+                    case "4":              
+                        Console.Clear();
+                        Console.Write ("  What is the expected service time for a Registrant in minutes? \n"
+                                         + "  Example: Enter 5.5 for 5 and half minutes (5 minutes, 30 seconds)." );
+                        Console.ReadLine();
+                        //setExpectedRegistrationTime(Console.ReadLine());
+                        Console.Clear();
+                        break;
+
+                    case "5":
+                        Console.Clear();
+                        Console.ReadLine();
+                        //run the simulation
+                        break;
+
+                    case "6":               
+                        exitMenu = true;
+                        break;
+
+                    default:
+                        Console.Clear();
+                        Console.Write("\n Enter a number from 1 to 6. \n");
+                        Console.Clear();
+                        break;
+                }
+                //exit loop if exitMenu = true
+            } while (!exitMenu);
         }
-
-
-        //private static void timeInLine()
-        //{
-        //    for (int i = 0; i < 100; i++)
-        //    {
-        //        Console.WriteLine(NegExp(3000));
-        //    }
-        //}
+        
         private static double NegExp(double ExpectedValue)
         {
             return (-ExpectedValue * Math.Log(ran.NextDouble(), Math.E) + 1500.0);
