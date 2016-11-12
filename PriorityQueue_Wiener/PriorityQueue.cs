@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PriorityQueue_Wiener
 {
+    //this is a change
     public class PriorityQueue<T> : IPriorityQueue<T> where T: IComparable
     {
         //fields and properties
@@ -42,8 +43,40 @@ namespace PriorityQueue_Wiener
             Count++;        // add 1 to the number of nodes in the PQ
         }
 
+        //Remove an item from the priority queue and discard it
+        public void Dequeue()
+        {
+            if (IsEmpty())
+                throw new InvalidOperationException("Cannot remove from empty queue.");
+            else
+            {
+                Node oldNode = top;
+                top = top.Next;
+                Count--;
+                oldNode = null;             //so oldNode will be garbage collected
+            }
+        }
 
+        //Make PQ empty
+        public void Clear()
+        {
+            top = null;
+        }
 
+        //Retrieve the top item on the PQ
+        public T Peek()
+        {
+            if (!IsEmpty())
+                return top.Item;
+            else
+                throw new InvalidOperationException("Cannot obtain top of priority queue.");
+        }
+
+        //asks whether the PQ is empty
+        public bool IsEmpty()
+        {
+            return Count == 0;
+        }
 
         private class Node
         {

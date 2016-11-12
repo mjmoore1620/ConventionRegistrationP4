@@ -11,7 +11,7 @@ namespace PriorityQueue_Wiener
         //removes all objects from container
         void Clear();
         //returns true if container is empty
-        void IsEmpty();
+        bool IsEmpty();
         //returns the number of entries in the container
         int Count { get; set; }
 
