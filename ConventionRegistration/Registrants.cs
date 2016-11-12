@@ -8,7 +8,23 @@ namespace ConventionRegistration
 {
     class Registrants
     {
+        Evnts Arrival = new Evnts();
+        public Registrants(int PatronNum)
+        {
 
+        }
+
+        public int LineSize
+        {
+            get { return LineSize; }
+            set { LineSize = value; }
+        }
+
+        public void PopTheQueue(TimeSpan TimeAtWindow)
+        {
+            DateTime Start = DateTime.Now;
+            //Start - TimeAtWindow;
+        }
 
     }
 }

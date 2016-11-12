@@ -9,36 +9,24 @@ namespace ConventionRegistration
     class ConventionRegistration
     {
 
-        private TimeSpan TimeAtRegistration;
-        private DateTime ArrivalTime;
-        private DateTime DepartureTime;
-        private TimeSpan durationTime; 
-        public DateTime Arrival
+        public int ShortestLine(List<Queue<Registrants>> QueueList)
         {
-            get {return ArrivalTime; }
-            set {ArrivalTime = value; }
+            int ShortestLineFound=0;
+            int min=1000;
+            int temp;
+            foreach(Queue<Registrants> c in QueueList)
+            {
+                temp = c.Count();
 
-        }
-        
-        public DateTime Departure
-        {
-            get {return DepartureTime; }
-            set {DepartureTime = value; }
-        }
-        public TimeSpan duration
-        {
-            get {return durationTime; }
-            set {durationTime = value; }
+                if(temp<min)
+                {
+                    min = temp;
+                }
+            }
+
+            return ShortestLineFound = min;
         }
        
-
-        public TimeSpan MyProperty
-        {
-            get { return TimeAtRegistration; }
-            set { TimeAtRegistration = value; }
-        }
-
-
     }
 
     
