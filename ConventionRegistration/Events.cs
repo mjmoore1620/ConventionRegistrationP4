@@ -9,7 +9,7 @@ namespace ConventionRegistration
     /// <summary>
     /// 
     /// </summary>
-    enum EVENTTYPE { ENTER, LEAVE }
+    enum EVENTTYPE {  ENTER, LEAVE }
     class Evnts : IComparable
     {
         public EVENTTYPE Type { get; set; }
@@ -23,7 +23,7 @@ namespace ConventionRegistration
             Patron = -1;
         }
 
-        public Evnts(EVENTTYPE type, DateTime time, int patron)
+        public Evnts (EVENTTYPE type, DateTime time, int patron)
         {
             Type = type;
             Time = time;
