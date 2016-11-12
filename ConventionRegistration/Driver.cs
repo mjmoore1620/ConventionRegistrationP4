@@ -21,6 +21,8 @@ namespace ConventionRegistration
     class Driver
     {
         private static Random ran = new Random();
+        private static Queue<Registrants> line = new Queue<Registrants>();
+        private static List<int> patrons;
 
         static void Main(string[] args)
         {
@@ -43,9 +45,24 @@ namespace ConventionRegistration
 
             //Console.WriteLine(sum / 9999.0);
 
-            MainMenu();
+            //MainMenu();
 
-            
+            double time = 36000000;
+            int expected = Poisson(1000);
+            patrons = new List<int>(expected);
+            for (int i = 0; i < expected; i++)
+            {
+                patrons.Add(i);
+            }
+            RandomizeList(patrons);
+
+            double rate = time / expected;
+
+            for (int i = 0; i < expected; i++)
+                line.Enqueue(new Registrants(patrons[i]));
+
+            while (line.Count > 0)
+                Console.WriteLine(line.Dequeue().PatronNum);
 
             Console.ReadLine();
         }
@@ -152,8 +169,30 @@ namespace ConventionRegistration
             return Count;
         }
 
+        private static void RandomizeList(List<int> list)
+        {
+            
+            for (int i = 0; i < list.Count * 5; i++)
+            {
+                Swap(list, ran.Next(list.Count), ran.Next(list.Count));
+            }
 
-        
-        
+        }
+
+        /// <summary>
+        /// Swaps two places in a list
+        /// </summary>
+        /// <param name="list">The list containing the values to be swapped</param>
+        /// <param name="n">first value to swap</param>
+        /// <param name="m">second value to swap</param>
+        private static void Swap(List<int> list, int n, int m)
+        {
+            int temp = list[n];
+            list[n] = list[m];
+            list[m] = temp;
+        }
+
+
+
     }
 }

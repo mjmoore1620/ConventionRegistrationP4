@@ -8,10 +8,11 @@ namespace ConventionRegistration
 {
     class Registrants
     {
-        Evnts Arrival = new Evnts();
-        public Registrants(int PatronNum)
+        //Evnts Arrival = new Evnts();
+        public int PatronNum { get; set; }
+        public Registrants(int patronNum)
         {
-
+            PatronNum = patronNum;
         }
 
         public int LineSize
