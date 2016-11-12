@@ -15,12 +15,21 @@ namespace ConventionRegistration
         public EVENTTYPE Type { get; set; }
         public DateTime Time { get; set; }
         public int Patron { get; set; }
+        public double Duration
+        {
+            get { return Duration; }
+            set { Duration = value; }
+        }
+
+        private static Random ran = new Random();
+
 
         public Evnts()
         {
             Type = EVENTTYPE.ENTER;
             Time = DateTime.Now;
             Patron = -1;
+            Duration = NegExp(270000);
         }
 
         public Evnts (EVENTTYPE type, DateTime time, int patron)
@@ -49,6 +58,10 @@ namespace ConventionRegistration
             return (e.Time.CompareTo(Time));
         }
 
+        private static double NegExp(double ExpectedValue)
+        {
+            return (-ExpectedValue * Math.Log(ran.NextDouble(), Math.E) + 1500.0);
+        }
 
 
     }
