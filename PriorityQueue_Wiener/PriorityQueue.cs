@@ -44,7 +44,7 @@ namespace PriorityQueue_Wiener
         }
 
         //Remove an item from the priority queue and discard it
-        public void Dequeue()
+        public T Dequeue()
         {
             if (IsEmpty())
                 throw new InvalidOperationException("Cannot remove from empty queue.");
@@ -53,7 +53,14 @@ namespace PriorityQueue_Wiener
                 Node oldNode = top;
                 top = top.Next;
                 Count--;
-                oldNode = null;             //so oldNode will be garbage collected
+                
+                //returns variable, still garbage collects oldNode
+                var item = oldNode.Item;
+                oldNode = null;
+                return item;
+                
+                //We changed this
+                //oldNode = null;             //so oldNode will be garbage collected
             }
         }
 

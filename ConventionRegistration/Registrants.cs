@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,23 @@ using System.Threading.Tasks;
 
 namespace ConventionRegistration
 {
-    class Registrants
+    class Registrants : IComparable
     {
-        Evnts Arrival = new Evnts();
-        public Registrants(int PatronNum)
-        {
+        public Evnt Arrival;
+        public int PatronNum { get; set; }
+        public TimeSpan windowTime;
+        public DateTime depart;
+        public int lineChoice { get; set; }
 
+        private static Random ran = new Random();
+
+        public Registrants(int patronNum)
+        {
+            PatronNum = patronNum;
+            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
         }
+
+        
 
         public int LineSize
         {
@@ -26,5 +37,22 @@ namespace ConventionRegistration
             //Start - TimeAtWindow;
         }
 
+        public int CompareTo(object registrant)
+        {
+            Registrants e = (Registrants)registrant;
+            return e.windowTime.CompareTo(windowTime);
+        }
+
+        private static double NegExp(double ExpectedValue, double minimum)
+        {
+            return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
+        }
+
+        public override string ToString()
+        {
+            return PatronNum + ": " + windowTime.ToString();
+        }
+
+        
     }
 }

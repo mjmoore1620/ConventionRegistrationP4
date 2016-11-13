@@ -10,7 +10,7 @@ namespace ConventionRegistration
     /// 
     /// </summary>
     enum EVENTTYPE {  ENTER, LEAVE }
-    class Evnts : IComparable
+    class Evnt : IComparable
     {
         public EVENTTYPE Type { get; set; }
         public DateTime Time { get; set; }
@@ -21,18 +21,21 @@ namespace ConventionRegistration
             set { Duration = value; }
         }
 
+        public TimeSpan windowTime;
+
         private static Random ran = new Random();
 
 
-        public Evnts()
+        public Evnt(DateTime currentTime)
         {
             Type = EVENTTYPE.ENTER;
-            Time = DateTime.Now;
+            Time = currentTime;
             Patron = -1;
-            Duration = NegExp(270000);
+            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
+            //Duration = (int)NegExp(270000, 90000);
         }
 
-        public Evnts (EVENTTYPE type, DateTime time, int patron)
+        public Evnt (EVENTTYPE type, DateTime time, int patron)
         {
             Type = type;
             Time = time;
@@ -51,16 +54,16 @@ namespace ConventionRegistration
 
         public int CompareTo(Object obj)
         {
-            if (!(obj is Evnts))
+            if (!(obj is Evnt))
                 throw new ArgumentException("The argument is not an Event Object");
 
-            Evnts e = (Evnts)obj;
+            Evnt e = (Evnt)obj;
             return (e.Time.CompareTo(Time));
         }
 
-        private static double NegExp(double ExpectedValue)
+        private static double NegExp(double ExpectedValue, double minimum)
         {
-            return (-ExpectedValue * Math.Log(ran.NextDouble(), Math.E) + 1500.0);
+            return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
         }
 
 
