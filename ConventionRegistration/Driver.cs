@@ -42,7 +42,10 @@ namespace ConventionRegistration
             listOfQs.Add(line2);
 
             nextInLine = new Registrants[(listOfQs.Count)];
-            double time = 360000;                               //in ticks or 1/10 of a sec 
+
+            TimeSpan timeOpen = new TimeSpan(8, 0, 0);
+            //double time = 360000;                               //in ticks or 1/10 of a sec 
+
             int expected = 20;//Poisson(1000);      //TODO test
             patronIdListFromPoisson = new List<int>(expected);
             for (int i = 0; i < expected; i++)
@@ -55,32 +58,40 @@ namespace ConventionRegistration
             //    Console.WriteLine(item);
             //}
 
-            double enqueueRate = time / expected;
+            //TimeSpan enqueueRate = time / expected;
 
             openTime = new DateTime(2016, 11, 1, 7, 0, 0, 0);
             closingTime = new DateTime(2016, 11, 1, 17, 0, 0, 0);
-            TimeSpan timeOpen = (closingTime - openTime);
+            //TimeSpan timeOpen = (closingTime - openTime);
 
-            //TimeSpan tick = new TimeSpan(1000000);                  //tick = .1 sec
-            TimeSpan tick = new TimeSpan(1000000 * 1000);               //tick = 100 sec
+            TimeSpan tick = new TimeSpan(1000000);                  //tick = .1 sec
+            //TimeSpan tick = new TimeSpan(1000000 * 1000);               //tick = 100 sec
+            TimeSpan enqueueRate = new TimeSpan(timeOpen.Ticks / expected);
+
 
             currentTime = openTime;                                 //set initial current time 
-            int patronEntranceThreshold = 0;                        //increases until this >= the enqueue rate
+            TimeSpan patronEntranceThreshold = new TimeSpan();                        //increases until this >= the enqueue rate
             int patronCounter = 0;                                  //used for index of the randomized patronNumber list
             
             //continue simulation until 
             while (currentTime < closingTime)
             {
-                
-                if (enqueueRate <= patronEntranceThreshold)
+                //Console.WriteLine(enqueueRate);
+                //Console.WriteLine(patronEntranceThreshold);
+
+                if (patronCounter < patronIdListFromPoisson.Count && enqueueRate <= patronEntranceThreshold)
                 {
+                    //Console.WriteLine(enqueueRate);
+                    //Console.WriteLine(patronEntranceThreshold);
+
                     //patron comes in, they choose the shortest line
+                    
                     Registrants newGuy = new Registrants(patronIdListFromPoisson[patronCounter]);
                     newGuy.lineChoice = ConventionRegistration.ShortestLine(listOfQs);
                     listOfQs[ConventionRegistration.ShortestLine(listOfQs)].Enqueue(newGuy);
 
                     patronCounter++;                  //enqueue the next person next time
-                    patronEntranceThreshold = 0;
+                    patronEntranceThreshold = new TimeSpan(0);
                 }
 
                 int lineChoice = -1;
@@ -94,11 +105,10 @@ namespace ConventionRegistration
                     while (windows.Count > 0 && (windows.Peek().Arrival.Time + windows.Peek().Arrival.windowTime) <= currentTime)
                     {
                         
-                        lineChoice = windows.Peek().lineChoice;                     //remember which queue the patron is leaving from     
-                        
+                        lineChoice = windows.Peek().lineChoice;                     //remember which queue the patron is leaving from
                                 
-                        //Console.WriteLine(windows.Dequeue().ToString());
-                        Console.WriteLine(windows.Peek().ToString());
+                        Console.WriteLine(windows.Dequeue().ToString());
+                        //Console.WriteLine(windows.Peek().ToString());
                         foreach (var item in listOfQs[lineChoice].ToArray())
                         {
                             //if()
@@ -142,7 +152,7 @@ namespace ConventionRegistration
                 }
 
                 currentTime += tick;
-                patronEntranceThreshold++;
+                patronEntranceThreshold += tick;
 
                 //for (int i = 0; i < listOfQs.Count; i++)
                 //{
@@ -194,14 +204,9 @@ namespace ConventionRegistration
                 //Console.WriteLine(156);
                 //Thread.Sleep(20);
                 //    Console.WriteLine("its time");
-<<<<<<< HEAD
-                
-=======
 
-
-                ListOfQueues print = new ListOfQueues(listOfQs);
-                Console.WriteLine(print.ToString());
->>>>>>> refs/remotes/origin/Allison4.0
+                //ListOfQueues print = new ListOfQueues(listOfQs);
+                //Console.WriteLine(print.ToString());
                 //Console.WriteLine(listDisplay);
 
             }//end while
