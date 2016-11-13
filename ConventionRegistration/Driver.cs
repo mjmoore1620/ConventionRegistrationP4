@@ -28,7 +28,7 @@ namespace ConventionRegistration
         private static Queue<Registrants> line2 = new Queue<Registrants>();
         private static List<Queue<Registrants>> listOfQs = new List<Queue<Registrants>>();
         private static PriorityQueue<Registrants> windows = new PriorityQueue<Registrants>();
-        private static List<int> fishNum;
+        private static List<int> patronIdListFromPoisson;
         private static DateTime currentTime;
         private static DateTime closingTime;
         private static DateTime openTime;
@@ -38,41 +38,19 @@ namespace ConventionRegistration
         [STAThread]
         static void Main(string[] args)
         {
-            //Console.WriteLine(MenuString());
-            //timeInLine();
-
-            ////this is a to test the average of NegExp()
-            //List<double> nums = new List<double>(1000);
-            //for (int i = 0; i < 9999; i++)
-            //{
-            //    //nums.Add(Poisson(300));
-            //    nums.Add(NegExp(270000 - 90000));
-            //}
-
-            //double sum = 0;
-            //foreach (var num in nums)
-            //{
-            //    sum += num;
-            //}
-
-            //Console.WriteLine(sum / 9999.0);
-
-            //MainMenu();
-
-
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             listOfQs.Add(line1);
             listOfQs.Add(line2);
+
             nextInLine = new Registrants[(listOfQs.Count)];
 
             double time = 360000;                               //in ticks or 1/10 of a sec 
-            int expected = Poisson(1000);
-            fishNum = new List<int>(expected);
+            int expected = 20;//Poisson(1000);      //TODO test
+            patronIdListFromPoisson = new List<int>(expected);
             for (int i = 0; i < expected; i++)
             {
-                fishNum.Add(i);
+                patronIdListFromPoisson.Add(i);
             }
-            RandomizeList(fishNum);
+            RandomizeList(patronIdListFromPoisson);
             //foreach (var item in fishNum)
             //{
             //    Console.WriteLine(item);
@@ -84,23 +62,26 @@ namespace ConventionRegistration
             closingTime = new DateTime(2016, 11, 1, 17, 0, 0, 0);
             TimeSpan timeOpen = (closingTime - openTime);
 
-            TimeSpan tick = new TimeSpan(1000000);                  //tick = .1 sec
+            //TimeSpan tick = new TimeSpan(1000000);                  //tick = .1 sec
+            TimeSpan tick = new TimeSpan(1000000 * 1000);               //tick = 100 sec
 
-            currentTime = openTime;
-            int waitedThisLong = 0;
-            int fishCounter = 0;
-            while (currentTime != closingTime)
+            currentTime = openTime;                                 //set initial current time 
+            int patronEntranceThreshold = 0;                        //increases until this >= the enqueue rate
+            int patronCounter = 0;                                  //used for index of the randomized patronNumber list
+            
+            //continue simulation until 
+            while (currentTime < closingTime)
             {
-
-                if (enqueueRate <= waitedThisLong)
+                
+                if (enqueueRate <= patronEntranceThreshold)
                 {
                     //patron comes in, they choose the shortest line
-                    Registrants newGuy = new Registrants(fishNum[fishCounter]);
+                    Registrants newGuy = new Registrants(patronIdListFromPoisson[patronCounter]);
                     newGuy.lineChoice = ConventionRegistration.ShortestLine(listOfQs);
                     listOfQs[ConventionRegistration.ShortestLine(listOfQs)].Enqueue(newGuy);
-                    //Console.WriteLine("fire");
-                    fishCounter++;                  //enqueue the next person next time
-                    waitedThisLong = 0;
+
+                    patronCounter++;                  //enqueue the next person next time
+                    patronEntranceThreshold = 0;
                 }
 
                 int lineChoice = -1;
@@ -108,46 +89,61 @@ namespace ConventionRegistration
                 {
                     //Console.WriteLine(windows.Peek().Arrival.Time + windows.Peek().windowTime);
                     //Console.WriteLine(currentTime);
-                    while (windows.Count > 0 && windows.Peek().Arrival.Time + windows.Peek().Arrival.windowTime <= currentTime)
+
+                    //while there are patrons in the PQ and they have waited (since they arrived at window + windowTime) until currentTime is <=
+                    //(while) instead of (if) incase multiple patron's wait time is up in same tick
+                    while (windows.Count > 0 && (windows.Peek().Arrival.Time + windows.Peek().Arrival.windowTime) <= currentTime)
                     {
-                        lineChoice = windows.Peek().lineChoice;
-                        Console.WriteLine(windows.Dequeue().ToString());
-                        Console.WriteLine(windows.Peek().PatronNum);
+                        
+                        lineChoice = windows.Peek().lineChoice;                     //remember which queue the patron is leaving from     
+                        
+                                
+                        //Console.WriteLine(windows.Dequeue().ToString());
+                        Console.WriteLine(windows.Peek().ToString());
                         foreach (var item in listOfQs[lineChoice].ToArray())
                         {
-                            Console.WriteLine(item.PatronNum);
+                            //if()
+                            //Console.WriteLine(item.PatronNum);
                         }
-                        windows.Dequeue();
-                        listOfQs[lineChoice].Dequeue();
-                        windows.Enqueue(listOfQs[lineChoice].Peek());
-                        listOfQs[lineChoice].Peek().Arrival = new Evnt(currentTime);
+
+                        //this is the only way patrons are dequeued
+                        windows.Dequeue();                                          //the patron leaves the PQ (window)
+                        listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
+
+                        //if there is someone next in that line, they enter the PQ (approach the window) and are assigned a wait time
+                        if (listOfQs[lineChoice].Count > 0)
+                        {
+                            windows.Enqueue(listOfQs[lineChoice].Peek());                           //new patron enters PQ (approaches window)       
+                            listOfQs[lineChoice].Peek().Arrival = new Evnt(currentTime);            //assign wait time
+                        }
                         //Console.WriteLine(107);
                     }
                 }
 
                 //set nextInLine array
+                //this is currently unused
                 for (int i = 0; i < listOfQs.Count; i++)
                 {
                     if (listOfQs[i].Count > 0)
                         nextInLine[i] = listOfQs[i].Peek();
                 }
 
-                if (windows.Count < listOfQs.Count)
+                //This fills the PQ initially, otherwise they are 
+                //pulled into the PQ when someone leaves.
+                if (windows.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
                 {
-                    for (int i = 0; i < listOfQs.Count; i++)
+                    for (int i = 0; i < listOfQs.Count; i++)            //for every queue
                     {
-                        if (listOfQs[i].Count > 0)
+                        if (listOfQs[i].Count > 0)                      
                         {
-                            windows.Enqueue(listOfQs[i].Peek());
-                            listOfQs[i].Peek().Arrival = new Evnt(currentTime);
+                            windows.Enqueue(listOfQs[i].Peek());                    //First in line enters PQ
+                            listOfQs[i].Peek().Arrival = new Evnt(currentTime);     //and gets window wait time
                         }
                     }
                 }
 
                 currentTime += tick;
-                waitedThisLong++;
-
-
+                patronEntranceThreshold++;
 
                 //for (int i = 0; i < listOfQs.Count; i++)
                 //{
@@ -196,16 +192,12 @@ namespace ConventionRegistration
                 //    }
                 //}
 
-
-
-
                 //Console.WriteLine(156);
                 //Thread.Sleep(20);
                 //    Console.WriteLine("its time");
-
-
-
+                
                 //Console.WriteLine(listDisplay);
+
             }//end while
             
             Console.ReadLine();
