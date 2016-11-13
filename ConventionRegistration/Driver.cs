@@ -10,8 +10,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+using PriorityQueue_Wiener;
 using System;
 using System.Collections.Generic;
+using static ConventionRegistration.ConventionRegistration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +23,16 @@ namespace ConventionRegistration
     class Driver
     {
         private static Random ran = new Random();
-        private static Queue<Registrants> line = new Queue<Registrants>();
-        private static List<int> patrons;
+        private static Queue<Registrants> line1 = new Queue<Registrants>();
+        private static Queue<Registrants> line2 = new Queue<Registrants>();
+        private static List<Queue<Registrants>> listOfQs = new List<Queue<Registrants>>();
+        private static PriorityQueue<Registrants> windows = new PriorityQueue<Registrants>();
+        private static List<int> fishNum;
+        private static DateTime currentTime;
+        private static DateTime closingTime;
+        private static DateTime openTime;
 
+        [STAThread]
         static void Main(string[] args)
         {
             //Console.WriteLine(MenuString());
@@ -33,8 +42,8 @@ namespace ConventionRegistration
             //List<double> nums = new List<double>(1000);
             //for (int i = 0; i < 9999; i++)
             //{
-            //    nums.Add(Poisson(300));
-            //    //nums.Add(NegExp(3000));
+            //    //nums.Add(Poisson(300));
+            //    nums.Add(NegExp(270000 - 90000));
             //}
 
             //double sum = 0;
@@ -47,22 +56,102 @@ namespace ConventionRegistration
 
             //MainMenu();
 
-            double time = 36000000;
+            listOfQs.Add(line1);
+            listOfQs.Add(line2);
+
+            double time = 360000;                               //in ticks or 1/10 of a sec 
             int expected = Poisson(1000);
-            patrons = new List<int>(expected);
+            fishNum = new List<int>(expected);
             for (int i = 0; i < expected; i++)
             {
-                patrons.Add(i);
+                fishNum.Add(i);
             }
-            RandomizeList(patrons);
+            RandomizeList(fishNum);
 
-            double rate = time / expected;
+            double enqueueRate = time / expected;
 
-            for (int i = 0; i < expected; i++)
-                line.Enqueue(new Registrants(patrons[i]));
+            openTime = new DateTime(2016, 11, 1, 7, 0, 0, 0);
+            closingTime = new DateTime(2016, 11, 1, 17, 0, 0, 0);
+            TimeSpan timeOpen = (closingTime - openTime);
 
-            while (line.Count > 0)
-                Console.WriteLine(line.Dequeue().PatronNum);
+            TimeSpan tick = new TimeSpan(1000000);                  //tick = .1 sec
+
+            currentTime = openTime;
+            int waitedThisLong = 0;
+            int fishCounter = 0;
+            while (currentTime != closingTime)
+            {
+
+                if(enqueueRate <= waitedThisLong)
+                {
+                    //patron comes in, they choose the shortest line
+                    listOfQs[ConventionRegistration.ShortestLine(listOfQs)].Enqueue(new Registrants(fishCounter));
+                    Console.WriteLine("fire");
+                    fishCounter++;                  //enqueue the next person next time
+                    waitedThisLong = 0;
+                }
+
+                
+
+
+
+
+
+                //Registrants poopHead = new Registrants(fishNum[c]);
+                //c++;
+                //current += tick;
+
+                //Registrants shitHead = new Registrants(fishNum[c]);
+                //c++;
+                //current += tick;
+
+                //line1.Enqueue(poopHead);
+                //line2.Enqueue(shitHead);
+
+                //windows.Enqueue(line1.Dequeue());
+                //windows.Enqueue(line2.Dequeue());
+
+                if(waitedThisLong%10 ==0)
+                    Console.WriteLine("wait");
+
+                currentTime += tick;
+                waitedThisLong++;
+
+
+            }
+
+            //Console.WriteLine(windows.Dequeue());
+            //Console.WriteLine(windows.Dequeue());
+
+            //Console.WriteLine(enqueueRate);
+
+            //test for checking tick accuracy
+            //for (int i = 0; i < 360000; i++)
+            //{
+            //    current += tick;
+            //}
+
+            //if (current == closingTime)
+            //{
+            //    Console.WriteLine(true);
+            //}
+            //else
+            //{
+            //    Console.WriteLine(false);
+            //}
+
+            //Console.WriteLine(current);
+
+
+
+
+
+
+            //for (int i = 0; i < expected; i++)
+            //    line.Enqueue(new Registrants(patrons[i]));
+
+            //while (line.Count > 0)
+            //    Console.WriteLine(line.Dequeue().PatronNum);
 
             Console.ReadLine();
         }
@@ -152,9 +241,9 @@ namespace ConventionRegistration
             } while (!exitMenu);
         }
         
-        private static double NegExp(double ExpectedValue)
+        private static double NegExp(double ExpectedValue, double minimum)
         {
-            return (-ExpectedValue * Math.Log(ran.NextDouble(), Math.E) + 1500.0);
+            return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
         }
 
         private static int Poisson(double ExpectedValue)
@@ -171,12 +260,8 @@ namespace ConventionRegistration
 
         private static void RandomizeList(List<int> list)
         {
-            
             for (int i = 0; i < list.Count * 5; i++)
-            {
                 Swap(list, ran.Next(list.Count), ran.Next(list.Count));
-            }
-
         }
 
         /// <summary>

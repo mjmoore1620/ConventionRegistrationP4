@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace ConventionRegistration
 {
-    class Registrants
+    class Registrants : IComparable
     {
         //Evnts Arrival = new Evnts();
         public int PatronNum { get; set; }
+        public TimeSpan windowTime;
+
+        private static Random ran = new Random();
+
         public Registrants(int patronNum)
         {
             PatronNum = patronNum;
+            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
         }
 
         public int LineSize
@@ -25,6 +30,22 @@ namespace ConventionRegistration
         {
             DateTime Start = DateTime.Now;
             //Start - TimeAtWindow;
+        }
+
+        public int CompareTo(object registrant)
+        {
+            Registrants e = (Registrants)registrant;
+            return e.windowTime.CompareTo(windowTime);
+        }
+
+        private static double NegExp(double ExpectedValue, double minimum)
+        {
+            return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
+        }
+
+        public override string ToString()
+        {
+            return PatronNum + ": " + windowTime.ToString();
         }
 
     }

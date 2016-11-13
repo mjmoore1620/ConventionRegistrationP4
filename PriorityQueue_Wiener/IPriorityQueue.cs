@@ -12,7 +12,7 @@ namespace PriorityQueue_Wiener
         void Enqueue(T item);
 
         //removes the item in the queue
-        void Dequeue();
+        T Dequeue();
 
         //Query
         T Peek();
