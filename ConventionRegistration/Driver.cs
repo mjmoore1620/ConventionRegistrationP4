@@ -64,7 +64,6 @@ namespace ConventionRegistration
             listOfQs.Add(line1);
             listOfQs.Add(line2);
             nextInLine = new Registrants[(listOfQs.Count)];
-            
             double time = 360000;                               //in ticks or 1/10 of a sec 
             int expected = Poisson(1000);
             fishNum = new List<int>(expected);
