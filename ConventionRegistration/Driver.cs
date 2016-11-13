@@ -64,7 +64,7 @@ namespace ConventionRegistration
             listOfQs.Add(line1);
             listOfQs.Add(line2);
             nextInLine = new Registrants[(listOfQs.Count)];
-
+            
             double time = 360000;                               //in ticks or 1/10 of a sec 
             int expected = Poisson(1000);
             fishNum = new List<int>(expected);
@@ -152,7 +152,7 @@ namespace ConventionRegistration
                 //for (int i = 0; i < listOfQs.Count; i++)
                 //{
                 //    Registrants[] tempArr = listOfQs[i].ToArray();
-                    
+
                 //    List<int> intList = new List<int>(tempArr.Length);
                 //    for (int j = 0; j < tempArr.Length; j++)
                 //    {
@@ -204,7 +204,8 @@ namespace ConventionRegistration
                 //    Console.WriteLine("its time");
 
 
-
+                ListOfQueues print = new ListOfQueues(listOfQs);
+                Console.WriteLine(print.ToString());
                 //Console.WriteLine(listDisplay);
             }//end while
             
