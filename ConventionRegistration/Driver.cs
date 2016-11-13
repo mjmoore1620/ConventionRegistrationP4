@@ -42,7 +42,6 @@ namespace ConventionRegistration
             listOfQs.Add(line2);
 
             nextInLine = new Registrants[(listOfQs.Count)];
-
             double time = 360000;                               //in ticks or 1/10 of a sec 
             int expected = 20;//Poisson(1000);      //TODO test
             patronIdListFromPoisson = new List<int>(expected);
@@ -148,7 +147,7 @@ namespace ConventionRegistration
                 //for (int i = 0; i < listOfQs.Count; i++)
                 //{
                 //    Registrants[] tempArr = listOfQs[i].ToArray();
-                    
+
                 //    List<int> intList = new List<int>(tempArr.Length);
                 //    for (int j = 0; j < tempArr.Length; j++)
                 //    {
@@ -195,7 +194,14 @@ namespace ConventionRegistration
                 //Console.WriteLine(156);
                 //Thread.Sleep(20);
                 //    Console.WriteLine("its time");
+<<<<<<< HEAD
                 
+=======
+
+
+                ListOfQueues print = new ListOfQueues(listOfQs);
+                Console.WriteLine(print.ToString());
+>>>>>>> refs/remotes/origin/Allison4.0
                 //Console.WriteLine(listDisplay);
 
             }//end while
