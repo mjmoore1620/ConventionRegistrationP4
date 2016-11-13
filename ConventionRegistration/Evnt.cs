@@ -21,15 +21,18 @@ namespace ConventionRegistration
             set { Duration = value; }
         }
 
+        public TimeSpan windowTime;
+
         private static Random ran = new Random();
 
 
-        public Evnt()
+        public Evnt(DateTime currentTime)
         {
             Type = EVENTTYPE.ENTER;
-            Time = DateTime.Now;
+            Time = currentTime;
             Patron = -1;
-            Duration = (int)NegExp(270000, 90000);
+            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
+            //Duration = (int)NegExp(270000, 90000);
         }
 
         public Evnt (EVENTTYPE type, DateTime time, int patron)
