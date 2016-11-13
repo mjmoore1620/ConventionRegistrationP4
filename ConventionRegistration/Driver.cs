@@ -17,6 +17,7 @@ using static ConventionRegistration.ConventionRegistration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace ConventionRegistration
 {
@@ -31,6 +32,8 @@ namespace ConventionRegistration
         private static DateTime currentTime;
         private static DateTime closingTime;
         private static DateTime openTime;
+        private static Registrants[] nextInLine;
+        private static List<List<int>> listToPrint= new List<List<int>>();
 
         [STAThread]
         static void Main(string[] args)
@@ -56,8 +59,11 @@ namespace ConventionRegistration
 
             //MainMenu();
 
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             listOfQs.Add(line1);
             listOfQs.Add(line2);
+            nextInLine = new Registrants[(listOfQs.Count)];
 
             double time = 360000;                               //in ticks or 1/10 of a sec 
             int expected = Poisson(1000);
@@ -67,6 +73,10 @@ namespace ConventionRegistration
                 fishNum.Add(i);
             }
             RandomizeList(fishNum);
+            //foreach (var item in fishNum)
+            //{
+            //    Console.WriteLine(item);
+            //}
 
             double enqueueRate = time / expected;
 
@@ -82,77 +92,122 @@ namespace ConventionRegistration
             while (currentTime != closingTime)
             {
 
-                if(enqueueRate <= waitedThisLong)
+                if (enqueueRate <= waitedThisLong)
                 {
                     //patron comes in, they choose the shortest line
-                    listOfQs[ConventionRegistration.ShortestLine(listOfQs)].Enqueue(new Registrants(fishCounter));
-                    Console.WriteLine("fire");
+                    Registrants newGuy = new Registrants(fishNum[fishCounter]);
+                    newGuy.lineChoice = ConventionRegistration.ShortestLine(listOfQs);
+                    listOfQs[ConventionRegistration.ShortestLine(listOfQs)].Enqueue(newGuy);
+                    //Console.WriteLine("fire");
                     fishCounter++;                  //enqueue the next person next time
                     waitedThisLong = 0;
                 }
 
-                
+                int lineChoice = -1;
+                if (windows.Count > 0)
+                {
+                    //Console.WriteLine(windows.Peek().Arrival.Time + windows.Peek().windowTime);
+                    //Console.WriteLine(currentTime);
+                    while (windows.Count > 0 && windows.Peek().Arrival.Time + windows.Peek().Arrival.windowTime <= currentTime)
+                    {
+                        lineChoice = windows.Peek().lineChoice;
+                        Console.WriteLine(windows.Dequeue().ToString());
+                        Console.WriteLine(windows.Peek().PatronNum);
+                        foreach (var item in listOfQs[lineChoice].ToArray())
+                        {
+                            Console.WriteLine(item.PatronNum);
+                        }
+                        windows.Dequeue();
+                        listOfQs[lineChoice].Dequeue();
+                        windows.Enqueue(listOfQs[lineChoice].Peek());
+                        listOfQs[lineChoice].Peek().Arrival = new Evnt(currentTime);
+                        //Console.WriteLine(107);
+                    }
+                }
 
+                //set nextInLine array
+                for (int i = 0; i < listOfQs.Count; i++)
+                {
+                    if (listOfQs[i].Count > 0)
+                        nextInLine[i] = listOfQs[i].Peek();
+                }
 
-
-
-
-                //Registrants poopHead = new Registrants(fishNum[c]);
-                //c++;
-                //current += tick;
-
-                //Registrants shitHead = new Registrants(fishNum[c]);
-                //c++;
-                //current += tick;
-
-                //line1.Enqueue(poopHead);
-                //line2.Enqueue(shitHead);
-
-                //windows.Enqueue(line1.Dequeue());
-                //windows.Enqueue(line2.Dequeue());
-
-                if(waitedThisLong%10 ==0)
-                    Console.WriteLine("wait");
+                if (windows.Count < listOfQs.Count)
+                {
+                    for (int i = 0; i < listOfQs.Count; i++)
+                    {
+                        if (listOfQs[i].Count > 0)
+                        {
+                            windows.Enqueue(listOfQs[i].Peek());
+                            listOfQs[i].Peek().Arrival = new Evnt(currentTime);
+                        }
+                    }
+                }
 
                 currentTime += tick;
                 waitedThisLong++;
 
 
-            }
 
-            //Console.WriteLine(windows.Dequeue());
-            //Console.WriteLine(windows.Dequeue());
+                //for (int i = 0; i < listOfQs.Count; i++)
+                //{
+                //    Registrants[] tempArr = listOfQs[i].ToArray();
+                    
+                //    List<int> intList = new List<int>(tempArr.Length);
+                //    for (int j = 0; j < tempArr.Length; j++)
+                //    {
+                //        //intList.Add(100);
+                //        intList.Add(tempArr[j].PatronNum);
+                //    }
+                //    listToPrint.Add(intList);
+                //}
+                //string listDisplay = "";
 
-            //Console.WriteLine(enqueueRate);
+                //listDisplay = $"\t\tRegistration Windows\n"
+                //            + "\t\t--------------------\n";
 
-            //test for checking tick accuracy
-            //for (int i = 0; i < 360000; i++)
-            //{
-            //    current += tick;
-            //}
+                //for(int i = 0; i < listOfQs.Count; i++)
+                //{
+                //    listDisplay += $"\t W {i}";
+                //}
 
-            //if (current == closingTime)
-            //{
-            //    Console.WriteLine(true);
-            //}
-            //else
-            //{
-            //    Console.WriteLine(false);
-            //}
+                //listDisplay += "\n";
+                //int max = 0;
+                //for (int i = 0; i < listOfQs.Count; i++)
+                //{
+                //    if (listOfQs[i].Count> max)
+                //    {
+                //        max = listOfQs[i].Count;
+                //    }
+                //}
 
-            //Console.WriteLine(current);
+                //for (int i = 0; i < max; i++)
+                //{
+                //    for (int j = 0; j < listOfQs.Count; j++)
+                //    {
+                //        try
+                //        { 
+                //            listDisplay += "\t" + listToPrint[j][i];
+                //        }
+                //        catch
+                //        {
+                //            listDisplay+= "\t    ";
+                //        }
+                //    }
+                //}
 
 
 
 
+                //Console.WriteLine(156);
+                //Thread.Sleep(20);
+                //    Console.WriteLine("its time");
 
 
-            //for (int i = 0; i < expected; i++)
-            //    line.Enqueue(new Registrants(patrons[i]));
 
-            //while (line.Count > 0)
-            //    Console.WriteLine(line.Dequeue().PatronNum);
-
+                //Console.WriteLine(listDisplay);
+            }//end while
+            
             Console.ReadLine();
         }
 
@@ -169,7 +224,7 @@ namespace ConventionRegistration
                        + "\t5. Run the simulation\n"
                        + "\t6. End the program\n\n"
                        + "\t  Type the number of your choice from the menu: ";
-            
+
             return menuString;
         }
 
