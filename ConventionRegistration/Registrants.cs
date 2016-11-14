@@ -12,8 +12,20 @@ namespace ConventionRegistration
         public Evnt Arrival;
         public int PatronNum { get; set; }
         public TimeSpan windowTime;
-        public DateTime depart;
+        
         public int lineChoice { get; set; }
+
+        private DateTime depart;
+
+        public DateTime Depart
+        {
+            get { return depart; }
+        }
+
+        public void SetDepart()
+        {
+            depart = Arrival.Time + windowTime;
+        }
 
         private static Random ran = new Random();
 

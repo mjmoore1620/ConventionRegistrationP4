@@ -44,12 +44,13 @@ namespace ConventionRegistration
 
         public override string ToString()
         {
-            String str = "";
-            str += String.Format("Patron {0} ", Patron.ToString().PadLeft(3));
-            str += Type + "'s";
-            str += String.Format(" at {0}", Time.ToShortTimeString().PadLeft(8));
+            //String str = "";
+            //str += String.Format("Patron {0} ", Patron.ToString().PadLeft(3));
+            //str += Type + "'s";
+            //str += String.Format(" at {0}", Time.ToShortTimeString().PadLeft(8));
+            
 
-            return str;
+            return Time.ToString();
         }
 
         public int CompareTo(Object obj)
@@ -65,6 +66,8 @@ namespace ConventionRegistration
         {
             return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
         }
+
+        
 
 
     }
