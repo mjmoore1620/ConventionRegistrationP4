@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Driver2.cs" />
     <Compile Include="ListOfQueues.cs" />
     <Compile Include="ConventionRegistration.cs" />
     <Compile Include="Evnt.cs" />

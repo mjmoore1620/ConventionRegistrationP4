@@ -106,7 +106,7 @@ namespace ConventionRegistration
         }
 
 
-        public static int ShortestLine(List<Queue<Registrants>> QueueList)
+        public static int GetShortestLine(List<Queue<Registrants>> QueueList)
         {
             int ShortestLineFound = 0;
             int min = 1000;
@@ -121,10 +121,42 @@ namespace ConventionRegistration
                 {
                     min = temp;
                     index = i;
+                    i++;
                 }
-                i++;
             }
             return ShortestLineFound = index;
+        }
+
+        public static int ShortestLine(List<Queue<Registrants>> listOfQs)
+        {
+            int smallestCount = 1000;
+            int indexOfQueue = -1;
+
+            for (int i = 0; i < listOfQs.Count; i++)
+            {
+                if (listOfQs[i].Count < smallestCount)
+                {
+                    smallestCount = listOfQs[i].Count;
+                    indexOfQueue = i;
+                }
+            }
+
+            return indexOfQueue;
+        }
+
+        public static int LongestLine(List<Queue<Registrants>> listOfQs)
+        {
+            int biggestCount = 0;
+
+            for (int i = 0; i < listOfQs.Count; i++)
+            {
+                if (listOfQs[i].Count > biggestCount)
+                {
+                    biggestCount = listOfQs[i].Count;
+                }
+            }
+
+            return biggestCount;
         }
 
         private static double NegExp(double ExpectedValue, double minimum)
