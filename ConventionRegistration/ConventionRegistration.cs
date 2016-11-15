@@ -56,10 +56,10 @@ namespace ConventionRegistration
                     longest = interval;
 
                 //Enqueue the arrival event for this person
-                PQ.Enqueue(new Evnt(EVENTTYPE.ENTER, openTime.Add(start), patron));
+                //PQ.Enqueue(new Evnt(EVENTTYPE.ENTER, openTime.Add(start), patron));
 
                 //Enqueue the departure event for this person
-                PQ.Enqueue(new Evnt(EVENTTYPE.LEAVE, openTime.Add(start + interval), patron));
+                //PQ.Enqueue(new Evnt(EVENTTYPE.LEAVE, openTime.Add(start + interval), patron));
             }
 
             //Calculate and display the average time patrons spend at the window

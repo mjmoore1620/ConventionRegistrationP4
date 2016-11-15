@@ -21,26 +21,43 @@ namespace ConventionRegistration
             set { Duration = value; }
         }
 
+        public int LineChoice { get; private set; }
+
         public TimeSpan windowTime;
 
         private static Random ran = new Random();
 
+        private DateTime depart;
 
-        public Evnt(DateTime currentTime)
+        public DateTime Depart
+        {
+            get { return depart; }
+        }
+
+
+        public void SetDepart()
+        {
+            depart = Time.Add(windowTime);
+        }
+
+
+        public Evnt(DateTime currentTime, int lineChoice, int patronNum)
         {
             Type = EVENTTYPE.ENTER;
             Time = currentTime;
-            Patron = -1;
             windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
-            //Duration = (int)NegExp(270000, 90000);
+            LineChoice = lineChoice;
+            Patron = patronNum;
+            SetDepart();
+
         }
 
-        public Evnt (EVENTTYPE type, DateTime time, int patron)
-        {
-            Type = type;
-            Time = time;
-            Patron = patron;
-        }
+        //public Evnt (EVENTTYPE type, DateTime time, int patron)
+        //{
+        //    Type = type;
+        //    Time = time;
+        //    Patron = patron;
+        //}
 
         public override string ToString()
         {
@@ -59,7 +76,7 @@ namespace ConventionRegistration
                 throw new ArgumentException("The argument is not an Event Object");
 
             Evnt e = (Evnt)obj;
-            return (e.Time.CompareTo(Time));
+            return (e.depart.CompareTo(Depart));
         }
 
         private static double NegExp(double ExpectedValue, double minimum)

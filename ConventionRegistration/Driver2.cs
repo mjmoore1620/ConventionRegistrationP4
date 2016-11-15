@@ -116,8 +116,8 @@ namespace ConventionRegistration
             //numberOfQs,
             //hoursOpen,
             //totalRegistrants;
-
-            TimeSpan tick = new TimeSpan(100000000);                              //tick = .1 sec
+            
+            TimeSpan tick = new TimeSpan(10000000);                              //tick = .1 sec
             DateTime openTime = new DateTime(2016, 11, 1, 8, 0, 0, 0);
             TimeSpan hoursOpenTimeSpan = new TimeSpan(hoursOpen, 0, 0);
             DateTime closingTime = new DateTime(2016, 11, 1, 8, 0, 0, 0);
@@ -138,6 +138,18 @@ namespace ConventionRegistration
             TimeSpan enterConvetionTimer = new TimeSpan(hoursOpenTimeSpan.Ticks / actualNumRegistrants);     //how often people enter the convention
             double tickNumTrigger = enterConvetionTimer.Ticks / tick.Ticks;
 
+            int numberOfTotalTicks = (int)(hoursOpenTimeSpan.Ticks / tick.Ticks);     //how often people enter the convention
+            //Console.WriteLine(hoursOpenTimeSpan.Ticks);
+            //Console.WriteLine(tick.Ticks);
+            //Console.WriteLine(numberOfTotalTicks);
+
+
+            List<int> entranceTimesInTicks = new List<int>(actualNumRegistrants);
+            for (int i = 0; i < actualNumRegistrants; i++)
+                entranceTimesInTicks.Add(ran.Next(numberOfTotalTicks));
+
+            entranceTimesInTicks.Sort();
+
             DateTime currentTime = openTime;
 
             List<Queue<Registrants>> listOfQs = new List<Queue<Registrants>>(numberOfQs);
@@ -150,160 +162,179 @@ namespace ConventionRegistration
                 expectedRegistrants.Enqueue(new Registrants(patronIdListFromPoisson[i]));
 
             PriorityQueue<Registrants> PQ = new PriorityQueue<Registrants>();
+            PriorityQueue<Evnt> PQ2 = new PriorityQueue<Evnt>();
+            Evnt[] PQArr = new Evnt[numberOfQs];
 
-            int testcounter = 0;
+            int failDQCounter = 0;
             testLeaveWin = 0;
             counterPatrons = 0;
             longestQ = 0;
             bool filled = false;
-            int tickCounter = 0;
+            int tickCounter = (int)tickNumTrigger;
             //ListOfQueues print = new ListOfQueues(listOfQs);
-            while (!(currentTime > closingTime && counterPatrons == testLeaveWin))//&& counterPatrons == testLeaveWin
+            //Console.WriteLine("currentTIme: " + currentTime);
+            //Console.WriteLine("closing time: " + closingTime);
+            //Console.WriteLine();
+            while (!(currentTime > closingTime ))//&& counterPatrons == testLeaveWin))//&& counterPatrons == testLeaveWin
             {
-                if (tickCounter >= tickNumTrigger && expectedRegistrants.Count != 0)
+                //if (tickCounter >= tickNumTrigger && expectedRegistrants.Count != 0)
+                //{
+                //    expectedRegistrants.Peek().lineChoice = ConventionRegistration.ShortestLine(listOfQs);
+                //    listOfQs[expectedRegistrants.Peek().lineChoice].Enqueue(expectedRegistrants.Dequeue());
+                //    tickCounter = 0;
+
+                //    if (longestQ < LongestLine(listOfQs))
+                //        longestQ = LongestLine(listOfQs); 
+
+                //    //Console.WriteLine(currentTime);
+                //    counterPatrons++;
+                //}
+
+                Console.WriteLine(counterPatrons);
+                Console.WriteLine(actualNumRegistrants);
+                Console.WriteLine(entranceTimesInTicks[counterPatrons]);
+                Console.WriteLine(tickCounter);
+                Console.WriteLine();
+                while (counterPatrons != actualNumRegistrants && entranceTimesInTicks[counterPatrons] == tickCounter)
                 {
                     expectedRegistrants.Peek().lineChoice = ConventionRegistration.ShortestLine(listOfQs);
                     listOfQs[expectedRegistrants.Peek().lineChoice].Enqueue(expectedRegistrants.Dequeue());
-                    tickCounter = 0;
 
-                    if (longestQ < LongestLine(listOfQs))
-                        longestQ = LongestLine(listOfQs); 
+                    if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
+                        longestQ = LongestLine(listOfQs);
 
-                    //Console.WriteLine(currentTime);
-                    counterPatrons++;
                     
+                    counterPatrons++;
                 }
 
-
-                //if (PQ.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
-                //{
-                //    for (int i = 0; i < listOfQs.Count; i++)            //for every queue
-                //    {
-                //        if (listOfQs[i].Count > 0)
-                //        {
-                //            listOfQs[i].Peek().Arrival = new Evnt(currentTime);     //and gets window wait time
-                //            PQ.Enqueue(listOfQs[i].Peek());                    //First in line enters PQ
-
-                //        }
-                //    }
-                //}
-
-                while (PQ.Count > 0 && (PQ.Peek().Depart) <= currentTime)        //check the top of PQ
+                //while (PQ.Count > 0 && (PQ.Peek().Depart) <= currentTime)        //check the top of PQ
+                while (PQ2.Count > 0 && PQ2.Peek().Depart <= currentTime)
                 {
                     
-                    //Console.WriteLine("Patron Number: " + PQ.Peek().PatronNum);
-                    //Console.WriteLine("Arrival Time: " + PQ.Peek().Arrival.Time);
-                    //Console.WriteLine("Window Time: " + PQ.Peek().windowTime);
-                    //Console.WriteLine("departtime: " + PQ.Peek().Depart);
+                    //Console.WriteLine("Patron Number: " + PQ2.Peek().PatronNum);
+                    //Console.WriteLine("Arrival Time: " + PQ2.Peek().Time);
+                    //Console.WriteLine("Window Time: " + PQ2.Peek().windowTime);
+                    //Console.WriteLine("departtime: " + PQ2.Peek().Depart);
                     //Console.WriteLine("Current Time" + currentTime);
 
-                    int lineChoice = PQ.Peek().lineChoice;           //remember which queue the patron is leaving from
+                    //test
+                    //int lineChoice = PQ.Peek().lineChoice;           //remember which queue the patron is leaving from
+                    int lineChoice = PQ2.Peek().LineChoice;
 
-
-                    totalTime += PQ.Peek().windowTime;
-                    PQ.Dequeue();                                          //the patron leaves the PQ (window)
+                    //test
+                    //totalTime += PQ.Peek().windowTime;
+                    totalTime += PQ2.Peek().windowTime;
+                    //PQ.Dequeue();                                          //the patron leaves the PQ (window)
+                    PQ2.Dequeue();
                     testLeaveWin++;
 
                     try
                     {
-
                         listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
+                        PQArr[lineChoice] = null;
                     }
                     catch (Exception)
                     {
                         //Console.WriteLine("failed");
-                        testcounter++;
+                        failDQCounter++;
                     }
 
                     //if there is someone next in that line, they enter the PQ (approach the window) and are assigned a wait time
                     if (listOfQs[lineChoice].Count > 0)
                     {
-                        listOfQs[lineChoice].Peek().Arrival = new Evnt(currentTime);            //assign wait time
-                        listOfQs[lineChoice].Peek().SetDepart();
-                        PQ.Enqueue(listOfQs[lineChoice].Peek());                         //new patron enters PQ (approaches window)   
-                        Console.WriteLine("Patron Number: " + PQ.Peek().PatronNum);
-                        Console.WriteLine("Arrival Time: " + PQ.Peek().Arrival.Time);
-                        Console.WriteLine("Window Time: " + PQ.Peek().windowTime);
-                        Console.WriteLine("departtime: " + PQ.Peek().Depart);
-                        Console.WriteLine("Current Time" + currentTime);
+                        listOfQs[lineChoice].Peek().Arrival = new Evnt(currentTime, lineChoice, listOfQs[lineChoice].Peek().PatronNum);            //assign wait time
+
+                        //test
+                        //listOfQs[lineChoice].Peek().SetDepart();
+                        //PQ.Enqueue(listOfQs[lineChoice].Peek());                         //new patron enters PQ (approaches window) 
+                        PQ2.Enqueue(listOfQs[lineChoice].Peek().Arrival);                         //new patron enters PQ (approaches window)  
+                        PQArr[lineChoice] = listOfQs[lineChoice].Peek().Arrival;
+                       //Console.WriteLine("Patron Number: " + PQ2.Peek().Patron);
+                       //Console.WriteLine("Arrival Time: " + PQ2.Peek().Time);
+                       //Console.WriteLine("Window Time: " + PQ2.Peek().windowTime);
+                       //Console.WriteLine("departtime: " + PQ2.Peek().Depart);
+                       //Console.WriteLine("Current Time" + currentTime);
 
 
                     }
 
-                }
+                    Console.WriteLine("\t" + currentTime);
+
+                    if (counterPatrons == actualNumRegistrants)
+                    {
+                        Console.WriteLine();
+                    }
+                    displayQs(listOfQs);
+
+                }//end while for window departure
+
+                
+
 
                 if (PQ.Count >= listOfQs.Count)
                     filled = true;
 
                 //This fills the PQ initially, otherwise they are 
                 //pulled into the PQ when someone leaves.
-
-                //if (!filled)
-                //{
-                if (PQ.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
+                if (!filled)
                 {
-                    for (int i = 0; i < listOfQs.Count; i++)            //for every queue
+                    if (PQ2.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
                     {
-                        if (listOfQs[i].Count > 0)
+                        for (int i = 0; i < listOfQs.Count; i++)            //for every queue
                         {
-                            if (PQ.Count < listOfQs.Count)
+                            if (listOfQs[i].Count > 0 && PQ2.Count < listOfQs.Count)    //if theres someone in the i'th Q and PQ2 is still not full
                             {
-                                listOfQs[i].Peek().Arrival = new Evnt(currentTime);     //and gets window wait time
-                                listOfQs[i].Peek().SetDepart();
-                                PQ.Enqueue(listOfQs[i].Peek());                    //First in line enters PQ 
-                            }
+                                bool duplicate = false;
+                                for (int j = 0; j < listOfQs.Count; j++)
+                                {
+                                    if (PQArr[j] != null && listOfQs[i].Peek().PatronNum == PQArr[j].Patron)
+                                        duplicate = true;
+                                }
 
+                                if (!duplicate)
+                                {
+                                    listOfQs[i].Peek().Arrival = new Evnt(currentTime, i, listOfQs[i].Peek().PatronNum);     //and gets window wait time
+
+                                    //test
+                                    //listOfQs[i].Peek().SetDepart();
+                                    //PQ.Enqueue(listOfQs[i].Peek());                    //First in line enters PQ 
+                                    PQ2.Enqueue(listOfQs[i].Peek().Arrival);
+                                    PQArr[i] = listOfQs[i].Peek().Arrival;
+                                    //TODO test else, break here 
+                                }
+                            }
                         }
                     }
                 }
-                //}
 
-                Console.Clear();
-                Console.WriteLine("\t" + currentTime);
-                displayQs(listOfQs);
-
-                //Console.WriteLine("q1: " + listOfQs[0].Count);
-                //Console.WriteLine("q2: " + listOfQs[1].Count);
-                //Console.WriteLine("q3: " + listOfQs[2].Count);
-                //Console.WriteLine("q4: " + listOfQs[3].Count);
-                //Console.WriteLine("q5: " + listOfQs[4].Count);
-
-                //string listDisplay = "";
-
-                //listDisplay = $"\t\tRegistration Windows\n"
-                //            + "\t\t" + currentTime + "\n"
-                //            + "\t\t--------------------\n";
-
-                //for (int i = 0; i < listOfQs.Count; i++)
+                //foreach (var item in PQArr)
                 //{
-                //    listDisplay += $"\t W {i}";
+                //    Console.WriteLine("Patron Number: " + item.Patron);
+                //    Console.WriteLine("Arrival Time: " + item.Time);
+                //    Console.WriteLine("Window Time: " + item.windowTime);
+                //    Console.WriteLine("departtime: " + item.Depart);
+                //    Console.WriteLine("Current Time" + currentTime);
                 //}
 
-                //Console.WriteLine(listDisplay);
-                //ListOfQueues print = new ListOfQueues(listOfQs);
-                //Console.WriteLine(print.ToString());
 
-                Thread.Sleep(5);
-                
-
+                //Thread.Sleep();
 
                 tickCounter++;
-                currentTime += tick;
+                currentTime = currentTime.Add(tick);
             }
-            double avgTime = totalTime.TotalSeconds / counterPatrons;
 
-
+            //summary at end
+            double avgTime = totalTime.TotalSeconds / testLeaveWin;
             displayQs(listOfQs);
-
             string avgTimes = "";
-
-            avgTimes += "The average service time for " + counterPatrons + "Registrants was "
+            avgTimes += "The average service time for " + testLeaveWin + " Registrants was "
                       + avgTime + ".";
 
+            Console.WriteLine(avgTimes);
 
 
-            Console.WriteLine("fails: " + testcounter);
-            Console.WriteLine("leave win:" + testLeaveWin);
+
+
 
             //Console.WriteLine("q1: " + listOfQs[0].Count);
             //Console.WriteLine("q2: " + listOfQs[1].Count);
@@ -311,25 +342,8 @@ namespace ConventionRegistration
             //Console.WriteLine("q4: " + listOfQs[3].Count);
             //Console.WriteLine("q5: " + listOfQs[4].Count);
 
-            //string listDisplay = "";
-
-            //listDisplay = $"\t\tRegistration Windows\n"
-            //            + "\t\t--------------------\n";
-
-            //for (int i = 0; i < listOfQs.Count; i++)
-            //{
-            //    listDisplay += $"\t W {i}";
-            //}
-
-            //Console.WriteLine(listDisplay);
-            //ListOfQueues print = new ListOfQueues(listOfQs);
-            //Console.WriteLine(print.ToString());
-
-            //displayQs(listOfQs);
-
-
-
-
+            Console.WriteLine("fails: " + failDQCounter);
+            Console.WriteLine("leave win:" + testLeaveWin);
             Console.WriteLine("Patrons: " + counterPatrons);
 
             Console.ReadLine();
@@ -337,6 +351,7 @@ namespace ConventionRegistration
 
         private static void displayQs(List<Queue<Registrants>> listOfQs)
         {
+            
             List<List<int>> listToPrint = new List<List<int>>();
             List<int> intList;
             for (int i = 0; i < listOfQs.Count; i++)
@@ -376,14 +391,22 @@ namespace ConventionRegistration
             {
                 for (int j = 0; j < listOfQs.Count; j++)
                 {
-                    try
+                    //try
+                    //{
+                    if (listToPrint[j].Count > i)
                     {
                         listDisplay += "\t" + listToPrint[j][i];
+
                     }
-                    catch
+                    else
                     {
                         listDisplay += "\t    ";
                     }
+                    //}
+                    //catch
+                    //{
+                    //    //listDisplay += "\t    ";
+                    //}
                 }
                 listDisplay += "\n";
             }
@@ -392,9 +415,11 @@ namespace ConventionRegistration
                          + "Longest Queue Encountered So Far:\t" + longestQ + "\n"
                          + "Events Processed So Far:\t" + (testLeaveWin + counterPatrons) + "\tArrivals:\t" + counterPatrons + "\tDepartures:\t" + testLeaveWin ;
 
+            Console.Clear();
             Console.WriteLine(listDisplay);
         }
 
+        #region menu
         private static void setExpectedRegistrationTime()
         {
             Console.Write("  What is the expected service time for a Registrant in minutes? \n"
@@ -526,7 +551,9 @@ namespace ConventionRegistration
                 //exit loop if exitMenu = true
             } while (!exitMenu);
         }
+        #endregion
 
+        #region distribution and util
         private static double NegExp(double ExpectedValue, double minimum)
         {
             return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
@@ -563,6 +590,7 @@ namespace ConventionRegistration
             list[m] = temp;
         }
 
+        #endregion
 
 
     }

@@ -9,11 +9,13 @@ namespace ConventionRegistration
 {
     class Registrants : IComparable
     {
-        public Evnt Arrival;
+       
         public int PatronNum { get; set; }
         public TimeSpan windowTime;
         
         public int lineChoice { get; set; }
+
+        public Evnt Arrival { get; set; }
 
         private DateTime depart;
 
@@ -24,7 +26,7 @@ namespace ConventionRegistration
 
         public void SetDepart()
         {
-            depart = Arrival.Time + windowTime;
+            depart = Arrival.Time.Add(windowTime);
         }
 
         private static Random ran = new Random();
@@ -32,22 +34,22 @@ namespace ConventionRegistration
         public Registrants(int patronNum)
         {
             PatronNum = patronNum;
-            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
+            //windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
         }
 
         
 
-        public int LineSize
-        {
-            get { return LineSize; }
-            set { LineSize = value; }
-        }
+        //public int LineSize
+        //{
+        //    get { return LineSize; }
+        //    set { LineSize = value; }
+        //}
 
-        public void PopTheQueue(TimeSpan TimeAtWindow)
-        {
-            DateTime Start = DateTime.Now;
-            //Start - TimeAtWindow;
-        }
+        //public void PopTheQueue(TimeSpan TimeAtWindow)
+        //{
+        //    DateTime Start = DateTime.Now;
+        //    //Start - TimeAtWindow;
+        //}
 
         public int CompareTo(object registrant)
         {
@@ -62,7 +64,7 @@ namespace ConventionRegistration
 
         public override string ToString()
         {
-            return PatronNum + ": " + windowTime.ToString();
+            return PatronNum + ": " + Arrival.Depart;
         }
 
         
