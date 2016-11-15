@@ -122,8 +122,6 @@ namespace ConventionRegistration
             TimeSpan hoursOpenTimeSpan = new TimeSpan(hoursOpen, 0, 0);
             DateTime closingTime = new DateTime(2016, 11, 1, 8, 0, 0, 0);
             closingTime += hoursOpenTimeSpan;
-
-
             
             int actualNumRegistrants = Poisson(totalExpectedRegistrants);       //actual number of registrants
             List<int> patronIdListFromPoisson = new List<int>(actualNumRegistrants);
@@ -132,8 +130,6 @@ namespace ConventionRegistration
                 patronIdListFromPoisson.Add(i);
 
             RandomizeList(patronIdListFromPoisson);
-
-
 
             TimeSpan enterConvetionTimer = new TimeSpan(hoursOpenTimeSpan.Ticks / actualNumRegistrants);     //how often people enter the convention
             double tickNumTrigger = enterConvetionTimer.Ticks / tick.Ticks;
@@ -259,11 +255,6 @@ namespace ConventionRegistration
                     }
 
                     Console.WriteLine("\t" + currentTime);
-
-                    if (counterPatrons == actualNumRegistrants)
-                    {
-                        Console.WriteLine();
-                    }
                     displayQs(listOfQs);
 
                 }//end while for window departure
@@ -391,8 +382,6 @@ namespace ConventionRegistration
             {
                 for (int j = 0; j < listOfQs.Count; j++)
                 {
-                    //try
-                    //{
                     if (listToPrint[j].Count > i)
                     {
                         listDisplay += "\t" + listToPrint[j][i];
@@ -402,11 +391,6 @@ namespace ConventionRegistration
                     {
                         listDisplay += "\t    ";
                     }
-                    //}
-                    //catch
-                    //{
-                    //    //listDisplay += "\t    ";
-                    //}
                 }
                 listDisplay += "\n";
             }
