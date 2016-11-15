@@ -37,7 +37,7 @@ namespace ConventionRegistration
             //windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
         }
 
-        
+
 
         //public int LineSize
         //{
