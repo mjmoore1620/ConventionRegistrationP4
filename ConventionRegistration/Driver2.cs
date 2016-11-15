@@ -117,7 +117,7 @@ namespace ConventionRegistration
             //hoursOpen,
             //totalRegistrants;
             
-            TimeSpan tick = new TimeSpan(10000000);                              //tick = .1 sec
+            TimeSpan tick = new TimeSpan(1000000);                              //tick = .1 sec
             DateTime openTime = new DateTime(2016, 11, 1, 8, 0, 0, 0);
             TimeSpan hoursOpenTimeSpan = new TimeSpan(hoursOpen, 0, 0);
             DateTime closingTime = new DateTime(2016, 11, 1, 8, 0, 0, 0);
@@ -170,12 +170,13 @@ namespace ConventionRegistration
             counterPatrons = 0;
             longestQ = 0;
             bool filled = false;
-            int tickCounter = (int)tickNumTrigger;
+            //int tickCounter = (int)tickNumTrigger;
+            int tickCounter = 0;
             //ListOfQueues print = new ListOfQueues(listOfQs);
             //Console.WriteLine("currentTIme: " + currentTime);
             //Console.WriteLine("closing time: " + closingTime);
             //Console.WriteLine();
-            while (!(currentTime > closingTime ))//&& counterPatrons == testLeaveWin))//&& counterPatrons == testLeaveWin
+            while (!((currentTime > closingTime ) && counterPatrons == testLeaveWin))//&& counterPatrons == testLeaveWin
             {
                 //if (tickCounter >= tickNumTrigger && expectedRegistrants.Count != 0)
                 //{
@@ -190,11 +191,11 @@ namespace ConventionRegistration
                 //    counterPatrons++;
                 //}
 
-                Console.WriteLine(counterPatrons);
-                Console.WriteLine(actualNumRegistrants);
-                Console.WriteLine(entranceTimesInTicks[counterPatrons]);
-                Console.WriteLine(tickCounter);
-                Console.WriteLine();
+                //Console.WriteLine(counterPatrons);
+                //Console.WriteLine(actualNumRegistrants);
+                //Console.WriteLine(entranceTimesInTicks[counterPatrons]);
+                //Console.WriteLine(tickCounter);
+                //Console.WriteLine();
                 while (counterPatrons != actualNumRegistrants && entranceTimesInTicks[counterPatrons] == tickCounter)
                 {
                     expectedRegistrants.Peek().lineChoice = ConventionRegistration.ShortestLine(listOfQs);
@@ -202,7 +203,6 @@ namespace ConventionRegistration
 
                     if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
                         longestQ = LongestLine(listOfQs);
-
                     
                     counterPatrons++;
                 }
