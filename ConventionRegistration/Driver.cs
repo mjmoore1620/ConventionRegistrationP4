@@ -51,7 +51,77 @@ namespace ConventionRegistration
         /// </summary>
         /// <param name="args">The arguments.</param>
         [STAThread]
-        
+        static void Main(string[] args)
+        {
+            //must be true to exit menu
+            bool exitMenu = false;
+
+            #region Main Menu Loop
+            //loops main menu
+            do
+            {
+                //prints menu options to user
+                Console.Write(MenuString());
+                //user menuchoice input
+                string MenuChoice = Console.ReadLine();
+
+                //main menu structure
+                switch (MenuChoice)
+                {
+                    case "1":
+                        Console.Clear();
+                        setRegistrantTotal();
+                        Console.Clear();
+                        break;
+
+                    case "2":
+                        Console.Clear();
+                        setConventionDuration();
+                        Console.Clear();
+                        break;
+
+                    case "3":
+                        Console.Clear();
+                        setNumberOfQs();
+                        Console.Clear();
+                        break;
+                    case "4":
+                        Console.Clear();
+                        setExpectedRegistrationTime();
+                        Console.Clear();
+                        break;
+
+                    case "5":
+                        Console.Clear();
+                        DoSimulation(totalExpectedRegistrants, hoursOpen, numberOfQs, expectedRegistrationTime);
+                        break;
+
+                    case "7":
+                        Console.Clear();
+                        SetNumberOfSimulationRuns();
+                        DoSimulationXTimes(totalExpectedRegistrants, hoursOpen, numberOfQs, expectedRegistrationTime, numberOfSimulations);
+                        Console.ReadLine();
+                        break;
+
+                    case "6":
+                        exitMenu = true;
+                        Console.WriteLine("Goodbye");
+                        Console.ReadLine();
+                        break;
+
+
+                    default:
+                        Console.Clear();
+                        Console.Write("\n Enter a number from 1 to 6. \n");
+                        Console.Clear();
+                        break;
+                }
+                //exit loop if exitMenu = true 
+
+            } while (!exitMenu);
+            #endregion
+        }
+
 
         /// <summary>
         /// Sets the number of simulation runs.
