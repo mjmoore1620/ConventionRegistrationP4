@@ -1,9 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////
+////	Project:		Project 4 - Convention Registration
+////	File Name:		PriorityQueue.cs
+////	Description:	PriorityQueue is a container class that prioritizes the items it contains based on those item's IComparable implementation. 
+////	Course:			CSCI 2210-201 - Data Structures
+////	Author:			Allison Ivey, iveyas@etsu.edu, Matthew Moore, zmjm40@etsu.edu, ETSU Graduate Students
+////	Created:	    Nov 11, 2016
+////	Copyright:		Allison Ivey, Matthew Moore, 2016
+////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 namespace ConventionRegistration
 {

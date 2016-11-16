@@ -223,38 +223,19 @@ namespace ConventionRegistration
         }
 
 
-        public static int GetShortestLine(List<Queue<Registrants>> QueueList)
-        {
-            int ShortestLineFound = 0;
-            int min = 1000;
-            int temp;
-            int index = 0;
-            int i = 0;
-            foreach (Queue<Registrants> c in QueueList)
-            {
-                temp = c.Count();
+        
 
-                if (temp < min)
-                {
-                    min = temp;
-                    index = i;
-                    i++;
-                }
-            }
-            return ShortestLineFound = index;
-        }
-
-        public static int ShortestLine(List<Queue<Registrants>> listOfQs)
+        public static int GetShortestLine(List<Queue<Registrants>> listOfQs)
         {
-            int smallestCount = 1000;
+            int smallestCount = 10000;                  
             int indexOfQueue = -1;
 
             for (int i = 0; i < listOfQs.Count; i++)
             {
                 if (listOfQs[i].Count < smallestCount)
                 {
-                    smallestCount = listOfQs[i].Count;
-                    indexOfQueue = i;
+                    smallestCount = listOfQs[i].Count;      //save shorter Queue length 
+                    indexOfQueue = i;                       //save index of shorter line
                 }
             }
 

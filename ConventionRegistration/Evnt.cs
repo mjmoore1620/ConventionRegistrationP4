@@ -1,8 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////
+////	Project:		Project 4 - Convention Registration
+////	File Name:		Evnt.cs
+////	Description:	 
+////	Course:			CSCI 2210-201 - Data Structures
+////	Author:			Allison Ivey, iveyas@etsu.edu, Matthew Moore, zmjm40@etsu.edu, ETSU Graduate Students
+////	Created:	    Nov 11, 2016
+////	Copyright:		Allison Ivey, Matthew Moore, 2016
+////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 namespace ConventionRegistration
 {
@@ -70,6 +78,19 @@ namespace ConventionRegistration
             return Time.ToString();
         }
 
+        /// <summary>
+        /// Compares the current instance with another object of the same type and returns an integer that 
+        /// indicates whether the current instance precedes, follows, or occurs in the same position in the 
+        /// sort order as the other object.
+        /// </summary>
+        /// <param name="obj">An object to compare with this instance.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has 
+        /// these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in 
+        /// the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. 
+        /// Greater than zero This instance follows <paramref name="obj" /> in the sort order.
+        /// </returns>
+        /// <exception cref="System.ArgumentException">The argument is not an Event Object</exception>
         public int CompareTo(Object obj)
         {
             if (!(obj is Evnt))
