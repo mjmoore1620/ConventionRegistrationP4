@@ -5,18 +5,58 @@ using System.Threading;
 
 namespace ConventionRegistration
 {
+    /// <summary>
+    /// Does all of the simulation and registration of the people
+    /// </summary>
     class ConventionRegistration
     {
+        /// <summary>
+        /// The random object
+        /// </summary>
         private static Random ran = new Random();           //uniform random number generator
+        /// <summary>
+        /// The total time
+        /// </summary>
         private static TimeSpan totalTime,                  //The total windowTime
+                                                            /// <summary>
+                                                            /// The maximum window time
+                                                            /// </summary>
                                 MaxWindowTime,              //max amount of time at the window
+                                                            /// <summary>
+                                                            /// The minimum window time
+                                                            /// </summary>
                                 MinWindowTime;              //min amount of time at the window
 
+        /// <summary>
+        /// Gets the test when to leave window.
+        /// </summary>
+        /// <value>
+        /// The test when to leave window.
+        /// </value>
         public static int testLeaveWin { get; private set; }
+        /// <summary>
+        /// Gets the counter patrons.
+        /// </summary>
+        /// <value>
+        /// The counter patrons.
+        /// </value>
         public static int counterPatrons { get; private set; }
+        /// <summary>
+        /// Gets the longest queue.
+        /// </summary>
+        /// <value>
+        /// The longest queue.
+        /// </value>
         public static int longestQ { get; private set; }
-        
 
+
+        /// <summary>
+        /// Does the simulation.
+        /// </summary>
+        /// <param name="ExpectedRegistrants">The expected registrants.</param>
+        /// <param name="NumberOfHoursOpen">The number of hours open.</param>
+        /// <param name="NumberOfQueues">The number of queues.</param>
+        /// <param name="ExpectedRegistrationTime">The expected registration time.</param>
         public static void DoSimulation(int ExpectedRegistrants, int NumberOfHoursOpen, int NumberOfQueues, double ExpectedRegistrationTime)
         {
 
@@ -83,7 +123,7 @@ namespace ConventionRegistration
                     displayQs(listOfQs);
 
                     counterPatrons++;
-                }
+                }//end while to find the shortest line
 
 
                 while (PQ2.Count > 0 && PQ2.Peek().Depart <= currentTime)
@@ -96,19 +136,14 @@ namespace ConventionRegistration
 
                     totalTime += PQ2.Peek().windowTime;
                   
-                    PQ2.Dequeue();
-                    testLeaveWin++;
+                    PQ2.Dequeue();  //get out of the priority queue
+                    testLeaveWin++; //tests when to leave the window and queue
 
 
-                    //try
-                    //{
-                        listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
-                        PQArr[lineChoice] = null;
-                    //}
-                    //catch (Exception)
-                    //{
-                    //    failDQCounter++;
-                    //}
+                    
+                    listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
+                    PQArr[lineChoice] = null;
+                  
 
                     //if there is someone next in that line, they enter the PQ (approach the window) and are assigned a wait time
                     if (listOfQs[lineChoice].Count > 0)
@@ -118,7 +153,7 @@ namespace ConventionRegistration
                         PQ2.Enqueue(listOfQs[lineChoice].Peek().Arrival);                         //new patron enters PQ (approaches window)  
                         PQArr[lineChoice] = listOfQs[lineChoice].Peek().Arrival;
 
-                    }
+                    }//end if of patron entering
 
                     Console.WriteLine("\t" + currentTime);
                     displayQs(listOfQs);
@@ -189,6 +224,13 @@ namespace ConventionRegistration
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Does the simulation without display.
+        /// </summary>
+        /// <param name="ExpectedRegistrants">The expected registrants.</param>
+        /// <param name="NumberOfHoursOpen">The number of hours open.</param>
+        /// <param name="NumberOfQueues">The number of queues.</param>
+        /// <param name="ExpectedRegistrationTime">The expected registration time.</param>
         static void DoSimulationWithoutDisplay(int ExpectedRegistrants, int NumberOfHoursOpen, int NumberOfQueues, double ExpectedRegistrationTime)
         {
 
@@ -343,6 +385,14 @@ namespace ConventionRegistration
 
         }
 
+        /// <summary>
+        /// Does the simulation x times.
+        /// </summary>
+        /// <param name="ExpectedRegistrants">The expected registrants.</param>
+        /// <param name="NumberOfHoursOpen">The number of hours open.</param>
+        /// <param name="NumberOfQueues">The number of queues.</param>
+        /// <param name="ExpectedRegistrationTime">The expected registration time.</param>
+        /// <param name="numberOfSimulations">The number of simulations.</param>
         public static void DoSimulationXTimes(int ExpectedRegistrants, int NumberOfHoursOpen, int NumberOfQueues, double ExpectedRegistrationTime, int numberOfSimulations)
         {
             double maxQLengthSum = 0;
@@ -364,6 +414,11 @@ namespace ConventionRegistration
 
         }
 
+        /// <summary>
+        /// Poissons the specified expected value.
+        /// </summary>
+        /// <param name="ExpectedValue">The expected value.</param>
+        /// <returns></returns>
         private static int Poisson(double ExpectedValue)
         {
             double dLimit = -ExpectedValue;
@@ -375,13 +430,22 @@ namespace ConventionRegistration
 
             return Count;
         }
-        
+
+        /// <summary>
+        /// Randomizes the list.
+        /// </summary>
+        /// <param name="list">The list.</param>
         private static void RandomizeList(List<int> list)
         {
             for (int i = 0; i < list.Count * 5; i++)
                 Swap(list, ran.Next(list.Count), ran.Next(list.Count));
         }
 
+        /// <summary>
+        /// Gets the shortest line.
+        /// </summary>
+        /// <param name="listOfQs">The list of qs.</param>
+        /// <returns></returns>
         public static int GetShortestLine(List<Queue<Registrants>> listOfQs)
         {
             int smallestCount = 10000;                  
@@ -399,6 +463,12 @@ namespace ConventionRegistration
             return indexOfQueue;
         }
 
+        /// <summary>
+        /// Swaps the specified list.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="n">The n.</param>
+        /// <param name="m">The m.</param>
         private static void Swap(List<int> list, int n, int m)
         {
             int temp = list[n];
@@ -406,6 +476,11 @@ namespace ConventionRegistration
             list[m] = temp;
         }
 
+        /// <summary>
+        /// Longests the line.
+        /// </summary>
+        /// <param name="listOfQs">The list of qs.</param>
+        /// <returns></returns>
         public static int LongestLine(List<Queue<Registrants>> listOfQs)
         {
             int biggestCount = 0;
@@ -422,6 +497,11 @@ namespace ConventionRegistration
         }
 
         #region Max Amount Of Time at The Window
+        /// <summary>
+        /// Minimums the time at window.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <returns></returns>
         public static TimeSpan MinTimeAtWindow(TimeSpan min)
         {
             int results = TimeSpan.Compare(min, MinWindowTime);
@@ -435,6 +515,11 @@ namespace ConventionRegistration
         #endregion
 
         #region Max Amount Of Time at The Window
+        /// <summary>
+        /// Maximums the time at window.
+        /// </summary>
+        /// <param name="max">The maximum.</param>
+        /// <returns></returns>
         public static TimeSpan MaxTimeAtWindow(TimeSpan max)
         {
             int results = TimeSpan.Compare(max, MaxWindowTime);
@@ -449,6 +534,10 @@ namespace ConventionRegistration
 
         #region Displays The Queues 
 
+        /// <summary>
+        /// Displays the queues.
+        /// </summary>
+        /// <param name="listOfQs">The list of queues.</param>
         private static void displayQs(List<Queue<Registrants>> listOfQs)
         {
 

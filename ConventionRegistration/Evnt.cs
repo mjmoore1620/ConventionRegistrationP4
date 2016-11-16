@@ -15,34 +15,82 @@ using System;
 namespace ConventionRegistration
 {
     /// <summary>
-    /// 
+    /// ENum of enter and leave type
     /// </summary>
     enum EVENTTYPE {  ENTER, LEAVE }
     class Evnt : IComparable
     {
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
         public EVENTTYPE Type { get; set; }
+        /// <summary>
+        /// Gets or sets the time.
+        /// </summary>
+        /// <value>
+        /// The time.
+        /// </value>
         public DateTime Time { get; set; }
+        /// <summary>
+        /// Gets or sets the patron.
+        /// </summary>
+        /// <value>
+        /// The patron.
+        /// </value>
         public int Patron { get; set; }
+        /// <summary>
+        /// Gets or sets the duration.
+        /// </summary>
+        /// <value>
+        /// The duration.
+        /// </value>
         public double Duration
         {
             get { return Duration; }
             set { Duration = value; }
         }
 
+        /// <summary>
+        /// Gets the line choice.
+        /// </summary>
+        /// <value>
+        /// The line choice.
+        /// </value>
         public int LineChoice { get; private set; }
 
+        /// <summary>
+        /// The window time
+        /// </summary>
         public TimeSpan windowTime;
 
+        /// <summary>
+        /// The ran
+        /// </summary>
         private static Random ran = new Random();
 
+        /// <summary>
+        /// The depart
+        /// </summary>
         private DateTime depart;
 
+        /// <summary>
+        /// Gets the depart.
+        /// </summary>
+        /// <value>
+        /// The depart.
+        /// </value>
         public DateTime Depart
         {
             get { return depart; }
         }
 
 
+        /// <summary>
+        /// Sets the depart.
+        /// </summary>
         public void SetDepart()
         {
             depart = Time.Add(windowTime);
