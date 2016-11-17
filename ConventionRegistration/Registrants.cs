@@ -14,30 +14,74 @@ using System;
 
 namespace ConventionRegistration
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.IComparable" />
     class Registrants : IComparable
     {
-       
+
+        /// <summary>
+        /// Gets or sets the patron number.
+        /// </summary>
+        /// <value>
+        /// The patron number.
+        /// </value>
         public int PatronNum { get; set; }
+        /// <summary>
+        /// The window time
+        /// </summary>
         public TimeSpan windowTime;
-        
+
+        /// <summary>
+        /// Gets or sets the line choice.
+        /// </summary>
+        /// <value>
+        /// The line choice.
+        /// </value>
         public int lineChoice { get; set; }
 
+        /// <summary>
+        /// Gets or sets the arrival.
+        /// </summary>
+        /// <value>
+        /// The arrival.
+        /// </value>
         public Evnt Arrival { get; set; }
 
+        /// <summary>
+        /// The depart
+        /// </summary>
         private DateTime depart;
 
+        /// <summary>
+        /// Gets the depart.
+        /// </summary>
+        /// <value>
+        /// The depart.
+        /// </value>
         public DateTime Depart
         {
             get { return depart; }
         }
 
+        /// <summary>
+        /// Sets the depart.
+        /// </summary>
         public void SetDepart()
         {
             depart = Arrival.Time.Add(windowTime);
         }
 
+        /// <summary>
+        /// The ran
+        /// </summary>
         private static Random ran = new Random();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Registrants"/> class.
+        /// </summary>
+        /// <param name="patronNum">The patron number.</param>
         public Registrants(int patronNum)
         {
             PatronNum = patronNum;
@@ -58,17 +102,34 @@ namespace ConventionRegistration
         //    //Start - TimeAtWindow;
         //}
 
+        /// <summary>
+        /// Compares to.
+        /// </summary>
+        /// <param name="registrant">The registrant.</param>
+        /// <returns></returns>
         public int CompareTo(object registrant)
         {
             Registrants e = (Registrants)registrant;
             return e.windowTime.CompareTo(windowTime);
         }
 
+        /// <summary>
+        /// Negs the exp.
+        /// </summary>
+        /// <param name="ExpectedValue">The expected value.</param>
+        /// <param name="minimum">The minimum.</param>
+        /// <returns></returns>
         private static double NegExp(double ExpectedValue, double minimum)
         {
             return (-(ExpectedValue - minimum) * Math.Log(ran.NextDouble(), Math.E) + minimum);
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return PatronNum + ": " + Arrival.Depart;

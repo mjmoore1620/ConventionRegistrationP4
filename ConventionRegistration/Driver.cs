@@ -15,17 +15,42 @@ using static ConventionRegistration.ConventionRegistration;
 
 namespace ConventionRegistration
 {
+    /// <summary>
+    /// The driver of the program
+    /// </summary>
     class Driver
     {
+        /// <summary>
+        /// The random object
+        /// </summary>
         private static Random ran = new Random();
 
+        /// <summary>
+        /// The expected registration time
+        /// </summary>
         private static double expectedRegistrationTime = 4.5;                       //Default values
+        /// <summary>
+        /// The number of queues
+        /// </summary>
         private static int numberOfQs = 9;                                          //Default values
+        /// <summary>
+        /// The hours open
+        /// </summary>
         private static int hoursOpen = 10;                                          //Default values
+        /// <summary>
+        /// The total expected registrants
+        /// </summary>
         private static int totalExpectedRegistrants = 1000;                         //Default values
+        /// <summary>
+        /// The number of simulations
+        /// </summary>
         private static int numberOfSimulations = 1;
 
-        [STAThread]
+        /// <summary>
+        /// Mains the specified arguments.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        [STAThread] 
         static void Main(string[] args)
         {
             //must be true to exit menu
@@ -83,7 +108,7 @@ namespace ConventionRegistration
                         Console.WriteLine("Goodbye");
                         Console.ReadLine();
                         break;
-                   
+
 
                     default:
                         Console.Clear();
@@ -92,11 +117,15 @@ namespace ConventionRegistration
                         break;
                 }
                 //exit loop if exitMenu = true 
-               
+
             } while (!exitMenu);
             #endregion
         }
-       
+
+
+        /// <summary>
+        /// Sets the number of simulation runs.
+        /// </summary>
         private static void SetNumberOfSimulationRuns()
         {
             Console.Write("  How many times do you want to run the simulation with the current settings? ");
@@ -108,6 +137,9 @@ namespace ConventionRegistration
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Sets the expected registration time.
+        /// </summary>
         private static void setExpectedRegistrationTime()
         {
             Console.Write("  What is the expected service time for a Registrant in minutes? \n"
@@ -118,9 +150,12 @@ namespace ConventionRegistration
             else
                 Console.WriteLine("  Invalid expected registration time entered. ");
             Console.ReadLine();
-        } 
+        }
 
         #region Set Number Of Queues 
+        /// <summary>
+        /// Sets the number of qs.
+        /// </summary>
         private static void setNumberOfQs()
         {
             Console.Write("  How many registration lines are to be simulated?: ");
@@ -130,10 +165,13 @@ namespace ConventionRegistration
             else
                 Console.WriteLine("  Invalid number of window lines entered. ");
             Console.ReadLine();
-        } 
+        }
         #endregion
 
         #region Set Convention Duration
+        /// <summary>
+        /// Sets the duration of the convention.
+        /// </summary>
         private static void setConventionDuration()
         {
             Console.Write("  How many hours will registration be open?: ");
@@ -144,10 +182,13 @@ namespace ConventionRegistration
             else
                 Console.WriteLine("  Invalid number of hours of operation entered. ");
             Console.ReadLine();
-        } 
+        }
         #endregion
 
         #region Set Registrant Total 
+        /// <summary>
+        /// Sets the registrant total.
+        /// </summary>
         private static void setRegistrantTotal()
         {
             Console.Write("  How many registrants are expected to be served in a day?: ");
@@ -158,10 +199,14 @@ namespace ConventionRegistration
             else
                 Console.WriteLine("  Invalid number of expected Registrants entered. ");
             Console.ReadLine();
-        } 
+        }
         #endregion
 
         #region Menu String
+        /// <summary>
+        /// Menus the string.
+        /// </summary>
+        /// <returns></returns>
         private static string MenuString()
         {
             string menuString = "";
