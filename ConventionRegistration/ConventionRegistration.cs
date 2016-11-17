@@ -330,8 +330,8 @@ namespace ConventionRegistration
                     expectedRegistrants.Peek().lineChoice = GetShortestLine(listOfQs);
                     listOfQs[expectedRegistrants.Peek().lineChoice].Enqueue(expectedRegistrants.Dequeue());
 
-                    if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
-                        longestQ = LongestLine(listOfQs);
+                    //if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
+                    longestQ += LongestLine(listOfQs);
 
                     //displayQs(listOfQs);
 
