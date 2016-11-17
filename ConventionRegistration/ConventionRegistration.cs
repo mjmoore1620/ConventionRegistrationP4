@@ -51,6 +51,9 @@ namespace ConventionRegistration
         public static int longestQ { get; private set; }
 
 
+        private static int longestQSum;
+
+
         #region Does The Simulation 
         /// <summary>
         /// Does the simulation.
@@ -305,6 +308,7 @@ namespace ConventionRegistration
             counterPatrons = 0;
             longestQ = 0;
             
+
             int tickCounter = 0;
             while (!((currentTime > closingTime) && counterPatrons == testLeaveWin))
             {
@@ -391,6 +395,7 @@ namespace ConventionRegistration
                       + avgTime + ".";
 
             Console.WriteLine(avgTimes);
+            totalTime = new TimeSpan();
 
             Console.WriteLine("fails: " + failDQCounter);
             Console.WriteLine("leave win:" + testLeaveWin);
@@ -413,7 +418,28 @@ namespace ConventionRegistration
             double maxQLengthSum = 0;
             int highestMaxQueueLength = 0;
             int lowestMaxQueueLength = int.MaxValue;
-            List<List<int>> listOfQs = new List<List<int>>();
+            longestQSum = 0;
+
+
+            List<List<int>> MaxQRecord = new List<List<int>>();
+            List<int[]> qs = new List<int[]>();
+            int[,] qqs = new int[100, 1];
+
+            //if (!qs[1][i.Contains(longestQ))
+            //    qs.Add(longestQ);
+
+
+            //for (int i = 0; i < qs.Count; i++)
+            //{
+            //    if (qs[i]. != longestQ)
+            //    {
+
+            //    }
+            //}
+            
+
+
+
 
             for (int i = 0; i < numberOfSimulations; i++)
             {
@@ -423,10 +449,16 @@ namespace ConventionRegistration
                     highestMaxQueueLength = longestQ;
                 if (lowestMaxQueueLength > longestQ)
                     lowestMaxQueueLength = longestQ;
+
+                
+                longestQSum += longestQ;
             }
+
+            double avgMaxQ = longestQSum / numberOfSimulations;
             //prints the longest Queue length in X number of simulations
             Console.WriteLine($"Highest max queue length of {numberOfSimulations} number of simulations: {highestMaxQueueLength}");
             Console.WriteLine($"Lowest max queue length of {numberOfSimulations} number of simulations: {lowestMaxQueueLength}");
+            Console.WriteLine($"Mean max queue length of {numberOfSimulations} number of simulations: {avgMaxQ}");
 
         } 
         #endregion
