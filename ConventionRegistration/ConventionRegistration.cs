@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using PriorityQueue_Wiener;
 using System.Threading;
+using System.Globalization;
 
 namespace ConventionRegistration
 {
@@ -50,6 +51,7 @@ namespace ConventionRegistration
         public static int longestQ { get; private set; }
 
 
+        #region Does The Simulation 
         /// <summary>
         /// Does the simulation.
         /// </summary>
@@ -114,36 +116,13 @@ namespace ConventionRegistration
 
                 while (counterPatrons != actualNumRegistrants && entranceTimesInTicks[counterPatrons] == tickCounter)
                 {
-                    expectedRegistrants.Peek().lineChoice = GetShortestLine(listOfQs);
-                    listOfQs[expectedRegistrants.Peek().lineChoice].Enqueue(expectedRegistrants.Dequeue());
-
-                    if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
-                        longestQ = LongestLine(listOfQs);
-
-                    displayQs(listOfQs);
-
-                    counterPatrons++;
+                    GetShortestLine(listOfQs, expectedRegistrants);
                 }//end while to find the shortest line
 
 
                 while (PQ2.Count > 0 && PQ2.Peek().Depart <= currentTime)
                 {
-
-
-                    int lineChoice = PQ2.Peek().LineChoice;
-                    MaxWindowTime= MaxTimeAtWindow(PQ2.Peek().windowTime);
-                    MinWindowTime = MinTimeAtWindow(PQ2.Peek().windowTime);
-
-                    totalTime += PQ2.Peek().windowTime;
-                  
-                    PQ2.Dequeue();  //get out of the priority queue
-                    testLeaveWin++; //tests when to leave the window and queue
-
-
-                    
-                    listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
-                    PQArr[lineChoice] = null;
-                  
+                    int lineChoice = GoToPriorityQueue(listOfQs, PQ2, PQArr);
 
                     //if there is someone next in that line, they enter the PQ (approach the window) and are assigned a wait time
                     if (listOfQs[lineChoice].Count > 0)
@@ -170,60 +149,120 @@ namespace ConventionRegistration
                 //pulled into the PQ when someone leaves.
                 if (!filled)
                 {
-                    if (PQ2.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
-                    {
-                        for (int i = 0; i < listOfQs.Count; i++)            //for every queue
-                        {
-                            if (listOfQs[i].Count > 0 && PQ2.Count < listOfQs.Count)    //if theres someone in the i'th Q and PQ2 is still not full
-                            {
-                                bool duplicate = false;
-                                for (int j = 0; j < listOfQs.Count; j++)
-                                {
-                                    if (PQArr[j] != null && listOfQs[i].Peek().PatronNum == PQArr[j].Patron)
-                                        duplicate = true;
-                                }
-
-                                if (!duplicate)
-                                {
-                                    listOfQs[i].Peek().Arrival = new Evnt(currentTime, i, listOfQs[i].Peek().PatronNum, ExpectedRegistrationTime);     //and gets window wait time
-
-
-                                    PQ2.Enqueue(listOfQs[i].Peek().Arrival);
-                                    PQArr[i] = listOfQs[i].Peek().Arrival;
-                                    //TODO test else, break here 
-
-                                }
-                            }
-                        }
-                    }
+                    ExitPriorityQueue(ExpectedRegistrationTime, currentTime, listOfQs, PQ2, PQArr);
                 }
 
 
-                
+
 
                 tickCounter++;
                 currentTime = currentTime.Add(tick);
             }
 
             //summary at end
-            double avgTime = totalTime.TotalSeconds / testLeaveWin;
+            double avgTime = (totalTime.TotalSeconds / testLeaveWin)/60;
             displayQs(listOfQs);
             string avgTimes = "";
             avgTimes += "The average service time for " + testLeaveWin + " Registrants was "
-                      + avgTime + ".";
+                      + avgTime.ToString("0.##") + ".";
 
             Console.WriteLine(avgTimes);
-
-            Console.WriteLine("fails: " + failDQCounter);
-            Console.WriteLine("leave win:" + testLeaveWin);
-            Console.WriteLine("Patrons: " + counterPatrons);
             totalTime = new TimeSpan();
-            Console.WriteLine("Maximum Window Time: " + MaxWindowTime);
-            Console.WriteLine("Minimum Window Time: " + MinWindowTime);
+            Console.WriteLine(("Maximum Window Time: ") + ("{0:%h} hours {0:%m} minutes {0:%s} seconds"), MaxWindowTime);
+            Console.WriteLine(("Minimum Window Time: ") + ("{0:%h} hours {0:%m} minutes {0:%s} seconds"), MinWindowTime);
 
             Console.ReadLine();
-        }
+        } 
+        #endregion
 
+        #region Exit The Priority Queue
+        /// <summary>
+        /// Exits the priority queue.
+        /// </summary>
+        /// <param name="ExpectedRegistrationTime">The expected registration time.</param>
+        /// <param name="currentTime">The current time.</param>
+        /// <param name="listOfQs">The list of qs.</param>
+        /// <param name="PQ2">The p q2.</param>
+        /// <param name="PQArr">The pq arr.</param>
+        private static void ExitPriorityQueue(double ExpectedRegistrationTime, DateTime currentTime, List<Queue<Registrants>> listOfQs, PriorityQueue<Evnt> PQ2, Evnt[] PQArr)
+        {
+            if (PQ2.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
+            {
+                for (int i = 0; i < listOfQs.Count; i++)            //for every queue
+                {
+                    if (listOfQs[i].Count > 0 && PQ2.Count < listOfQs.Count)    //if theres someone in the i'th Q and PQ2 is still not full
+                    {
+                        bool duplicate = false;
+                        for (int j = 0; j < listOfQs.Count; j++)
+                        {
+                            if (PQArr[j] != null && listOfQs[i].Peek().PatronNum == PQArr[j].Patron)
+                                duplicate = true;
+                        }
+
+                        if (!duplicate)
+                        {
+                            listOfQs[i].Peek().Arrival = new Evnt(currentTime, i, listOfQs[i].Peek().PatronNum, ExpectedRegistrationTime);     //and gets window wait time
+
+
+                            PQ2.Enqueue(listOfQs[i].Peek().Arrival);
+                            PQArr[i] = listOfQs[i].Peek().Arrival;
+                            //TODO test else, break here 
+
+                        }
+                    }
+                }
+            }
+        } 
+        #endregion
+
+        #region Goes To The Priority Queue
+        /// <summary>
+        /// Goes to priority queue.
+        /// </summary>
+        /// <param name="listOfQs">The list of qs.</param>
+        /// <param name="PQ2">The p q2.</param>
+        /// <param name="PQArr">The pq arr.</param>
+        /// <returns></returns>
+        private static int GoToPriorityQueue(List<Queue<Registrants>> listOfQs, PriorityQueue<Evnt> PQ2, Evnt[] PQArr)
+        {
+            int lineChoice = PQ2.Peek().LineChoice;
+            MaxWindowTime = MaxTimeAtWindow(PQ2.Peek().windowTime);
+            MinWindowTime = MinTimeAtWindow(PQ2.Peek().windowTime);
+
+            totalTime += PQ2.Peek().windowTime;
+
+            PQ2.Dequeue();  //get out of the priority queue
+            testLeaveWin++; //tests when to leave the window and queue
+
+
+
+            listOfQs[lineChoice].Dequeue();                             //the patron leaves the queue (line they were waiting in)
+            PQArr[lineChoice] = null;
+            return lineChoice;
+        } 
+        #endregion
+
+        #region Gets The Shortest Line
+        /// <summary>
+        /// Gets the shortest line.
+        /// </summary>
+        /// <param name="listOfQs">The list of qs.</param>
+        /// <param name="expectedRegistrants">The expected registrants.</param>
+        private static void GetShortestLine(List<Queue<Registrants>> listOfQs, Queue<Registrants> expectedRegistrants)
+        {
+            expectedRegistrants.Peek().lineChoice = GetShortestLine(listOfQs);
+            listOfQs[expectedRegistrants.Peek().lineChoice].Enqueue(expectedRegistrants.Dequeue());
+
+            if (longestQ < LongestLine(listOfQs))       //save the length of longest Queue
+                longestQ = LongestLine(listOfQs);
+
+            displayQs(listOfQs);
+
+            counterPatrons++;
+        } 
+        #endregion
+
+        #region Used For Testing Window Time And Length Based On Window Number With No Visual Element
         /// <summary>
         /// Does the simulation without display.
         /// </summary>
@@ -383,8 +422,10 @@ namespace ConventionRegistration
             Console.WriteLine("leave win:" + testLeaveWin);
             Console.WriteLine("Patrons: " + counterPatrons);
 
-        }
+        } 
+        #endregion
 
+        #region Does The Simulation x Times
         /// <summary>
         /// Does the simulation x times.
         /// </summary>
@@ -401,7 +442,7 @@ namespace ConventionRegistration
 
             for (int i = 0; i < numberOfSimulations; i++)
             {
-                DoSimulationWithoutDisplay(ExpectedRegistrants, NumberOfHoursOpen, NumberOfQueues,  ExpectedRegistrationTime);
+                DoSimulationWithoutDisplay(ExpectedRegistrants, NumberOfHoursOpen, NumberOfQueues, ExpectedRegistrationTime);
                 maxQLengthSum += longestQ;
                 if (highestMaxQueueLength < longestQ)
                     highestMaxQueueLength = longestQ;
@@ -412,8 +453,10 @@ namespace ConventionRegistration
             Console.WriteLine($"Highest max queue length of {numberOfSimulations} number of simulations: {highestMaxQueueLength}");
             Console.WriteLine($"Lowest max queue length of {numberOfSimulations} number of simulations: {lowestMaxQueueLength}");
 
-        }
+        } 
+        #endregion
 
+        #region Poisson specifies the expected Value
         /// <summary>
         /// Poissons the specified expected value.
         /// </summary>
@@ -429,8 +472,10 @@ namespace ConventionRegistration
                 dSum += Math.Log(ran.NextDouble());
 
             return Count;
-        }
+        } 
+        #endregion
 
+        #region Randomizes The List of Registrants
         /// <summary>
         /// Randomizes the list.
         /// </summary>
@@ -439,8 +484,10 @@ namespace ConventionRegistration
         {
             for (int i = 0; i < list.Count * 5; i++)
                 Swap(list, ran.Next(list.Count), ran.Next(list.Count));
-        }
+        } 
+        #endregion
 
+        #region Gets The Shortest Line
         /// <summary>
         /// Gets the shortest line.
         /// </summary>
@@ -448,7 +495,7 @@ namespace ConventionRegistration
         /// <returns></returns>
         public static int GetShortestLine(List<Queue<Registrants>> listOfQs)
         {
-            int smallestCount = 10000;                  
+            int smallestCount = 10000;
             int indexOfQueue = -1;
 
             for (int i = 0; i < listOfQs.Count; i++)
@@ -461,8 +508,10 @@ namespace ConventionRegistration
             }
 
             return indexOfQueue;
-        }
+        } 
+        #endregion
 
+        #region Swap the specified list
         /// <summary>
         /// Swaps the specified list.
         /// </summary>
@@ -474,10 +523,12 @@ namespace ConventionRegistration
             int temp = list[n];
             list[n] = list[m];
             list[m] = temp;
-        }
+        } 
+        #endregion
 
+        #region Longest Line
         /// <summary>
-        /// Longests the line.
+        /// Longest line.
         /// </summary>
         /// <param name="listOfQs">The list of qs.</param>
         /// <returns></returns>
@@ -494,7 +545,8 @@ namespace ConventionRegistration
             }
 
             return biggestCount;
-        }
+        } 
+        #endregion
 
         #region Max Amount Of Time at The Window
         /// <summary>
@@ -598,7 +650,7 @@ namespace ConventionRegistration
 
             Console.Clear();
             Console.WriteLine(listDisplay);
-            Thread.Sleep(5);
+            Thread.Sleep(10);
 
         }
 

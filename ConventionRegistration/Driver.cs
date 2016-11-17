@@ -50,7 +50,7 @@ namespace ConventionRegistration
         /// Mains the specified arguments.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        [STAThread]
+        [STAThread] 
         static void Main(string[] args)
         {
             //must be true to exit menu
