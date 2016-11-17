@@ -100,15 +100,12 @@ namespace ConventionRegistration
             for (int i = 0; i < actualNumRegistrants; i++)
                 expectedRegistrants.Enqueue(new Registrants(patronIdListFromPoisson[i]));
 
-            PriorityQueue<Registrants> PQ = new PriorityQueue<Registrants>();
             PriorityQueue<Evnt> PQ2 = new PriorityQueue<Evnt>();
             Evnt[] PQArr = new Evnt[NumberOfQueues];
-
-            int failDQCounter = 0;
+            
             testLeaveWin = 0;
             counterPatrons = 0;
             longestQ = 0;
-            bool filled = false;
             int tickCounter = 0;
 
             while (!((currentTime > closingTime) && counterPatrons == testLeaveWin))//&& counterPatrons == testLeaveWin
@@ -133,24 +130,16 @@ namespace ConventionRegistration
                         PQArr[lineChoice] = listOfQs[lineChoice].Peek().Arrival;
 
                     }//end if of patron entering
-
-                    Console.WriteLine("\t" + currentTime);
+                    
                     displayQs(listOfQs);
 
                 }//end while for window departure
 
-
-
-
-                if (PQ.Count >= listOfQs.Count)
-                    filled = true;
+                
 
                 //This fills the PQ initially, otherwise they are 
                 //pulled into the PQ when someone leaves.
-                if (!filled)
-                {
-                    ExitPriorityQueue(ExpectedRegistrationTime, currentTime, listOfQs, PQ2, PQArr);
-                }
+                    EnterPriorityQueue(ExpectedRegistrationTime, currentTime, listOfQs, PQ2, PQArr);
 
 
 
@@ -170,21 +159,20 @@ namespace ConventionRegistration
             totalTime = new TimeSpan();
             Console.WriteLine(("Maximum Window Time: ") + ("{0:%h} hours {0:%m} minutes {0:%s} seconds"), MaxWindowTime);
             Console.WriteLine(("Minimum Window Time: ") + ("{0:%h} hours {0:%m} minutes {0:%s} seconds"), MinWindowTime);
-
-            Console.ReadLine();
+            
         } 
         #endregion
 
         #region Exit The Priority Queue
         /// <summary>
-        /// Exits the priority queue.
+        /// Registrant enters the priority queue.
         /// </summary>
         /// <param name="ExpectedRegistrationTime">The expected registration time.</param>
         /// <param name="currentTime">The current time.</param>
         /// <param name="listOfQs">The list of qs.</param>
         /// <param name="PQ2">The p q2.</param>
         /// <param name="PQArr">The pq arr.</param>
-        private static void ExitPriorityQueue(double ExpectedRegistrationTime, DateTime currentTime, List<Queue<Registrants>> listOfQs, PriorityQueue<Evnt> PQ2, Evnt[] PQArr)
+        private static void EnterPriorityQueue(double ExpectedRegistrationTime, DateTime currentTime, List<Queue<Registrants>> listOfQs, PriorityQueue<Evnt> PQ2, Evnt[] PQArr)
         {
             if (PQ2.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
             {
@@ -192,6 +180,7 @@ namespace ConventionRegistration
                 {
                     if (listOfQs[i].Count > 0 && PQ2.Count < listOfQs.Count)    //if theres someone in the i'th Q and PQ2 is still not full
                     {
+                        //make sure Registrants don't go to a window that isn't there own
                         bool duplicate = false;
                         for (int j = 0; j < listOfQs.Count; j++)
                         {
@@ -201,12 +190,10 @@ namespace ConventionRegistration
 
                         if (!duplicate)
                         {
-                            listOfQs[i].Peek().Arrival = new Evnt(currentTime, i, listOfQs[i].Peek().PatronNum, ExpectedRegistrationTime);     //and gets window wait time
-
-
+                            listOfQs[i].Peek().Arrival = new Evnt(currentTime, i, listOfQs[i].Peek().PatronNum, ExpectedRegistrationTime);     //get window wait time
+                            
                             PQ2.Enqueue(listOfQs[i].Peek().Arrival);
                             PQArr[i] = listOfQs[i].Peek().Arrival;
-                            //TODO test else, break here 
 
                         }
                     }
@@ -309,8 +296,7 @@ namespace ConventionRegistration
 
             for (int i = 0; i < actualNumRegistrants; i++)
                 expectedRegistrants.Enqueue(new Registrants(patronIdListFromPoisson[i]));
-
-            PriorityQueue<Registrants> PQ = new PriorityQueue<Registrants>();
+            
             PriorityQueue<Evnt> PQ2 = new PriorityQueue<Evnt>();
             Evnt[] PQArr = new Evnt[NumberOfQueues];
 
@@ -318,9 +304,7 @@ namespace ConventionRegistration
             testLeaveWin = 0;
             counterPatrons = 0;
             longestQ = 0;
-
-            bool filled = false;
-
+            
             int tickCounter = 0;
             while (!((currentTime > closingTime) && counterPatrons == testLeaveWin))
             {
@@ -360,22 +344,16 @@ namespace ConventionRegistration
                         PQArr[lineChoice] = listOfQs[lineChoice].Peek().Arrival;
 
                     }
-
-                    //Console.WriteLine("\t" + currentTime);
-                    //displayQs(listOfQs);
+                    
 
                 }//end while for window departure
 
 
 
 
-                if (PQ.Count >= listOfQs.Count)
-                    filled = true;
-
+                
                 //This fills the PQ initially, otherwise they are 
                 //pulled into the PQ when someone leaves.
-                if (!filled)
-                {
                     if (PQ2.Count < listOfQs.Count)                     //if the PQ (windows) are not full      
                     {
                         for (int i = 0; i < listOfQs.Count; i++)            //for every queue
@@ -395,15 +373,11 @@ namespace ConventionRegistration
 
                                     PQ2.Enqueue(listOfQs[i].Peek().Arrival);         //First in line enters PQ 
                                     PQArr[i] = listOfQs[i].Peek().Arrival;
-                                    //TODO test else, break here 
                                 }
                             }
                         }
                     }
-                }
-
-
-                //Thread.Sleep();
+                    
 
                 tickCounter++;
                 currentTime = currentTime.Add(tick);
@@ -439,6 +413,7 @@ namespace ConventionRegistration
             double maxQLengthSum = 0;
             int highestMaxQueueLength = 0;
             int lowestMaxQueueLength = int.MaxValue;
+            List<List<int>> listOfQs = new List<List<int>>();
 
             for (int i = 0; i < numberOfSimulations; i++)
             {
@@ -508,12 +483,12 @@ namespace ConventionRegistration
             }
 
             return indexOfQueue;
-        } 
+        }
         #endregion
 
-        #region Swap the specified list
+        #region Swap the specified indexes
         /// <summary>
-        /// Swaps the specified list.
+        /// Swaps the specified indexes.
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="n">The n.</param>

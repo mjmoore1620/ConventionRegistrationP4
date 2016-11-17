@@ -44,7 +44,7 @@ namespace ConventionRegistration
         /// <summary>
         /// The number of simulations
         /// </summary>
-        private static int numberOfSimulations = 1;
+        private static int numberOfSimulations = 10;
 
         /// <summary>
         /// Mains the specified arguments.
@@ -71,13 +71,13 @@ namespace ConventionRegistration
                     case "1":
                         Console.Clear();
                         setRegistrantTotal();
-                        Console.Clear();
+                        //Console.Clear();
                         break;
 
                     case "2":
                         Console.Clear();
                         setConventionDuration();
-                        Console.Clear();
+                        //Console.Clear();
                         break;
 
                     case "3":
@@ -88,36 +88,41 @@ namespace ConventionRegistration
                     case "4":
                         Console.Clear();
                         setExpectedRegistrationTime();
-                        Console.Clear();
+                        //Console.Clear();
                         break;
 
                     case "5":
                         Console.Clear();
                         DoSimulation(totalExpectedRegistrants, hoursOpen, numberOfQs, expectedRegistrationTime);
-                        break;
-
-                    case "7":
-                        Console.Clear();
-                        SetNumberOfSimulationRuns();
-                        DoSimulationXTimes(totalExpectedRegistrants, hoursOpen, numberOfQs, expectedRegistrationTime, numberOfSimulations);
-                        Console.ReadLine();
+                        EnterToContinue();
                         break;
 
                     case "6":
+                        Console.Clear();
+                        if(SetNumberOfSimulationRuns())
+                        {
+                            DoSimulationXTimes(totalExpectedRegistrants, hoursOpen, numberOfQs, expectedRegistrationTime, numberOfSimulations);
+                            EnterToContinue();
+                        }
+                        break;
+
+                    case "7":
                         exitMenu = true;
                         Console.WriteLine("Goodbye");
-                        Console.ReadLine();
+                        EnterToContinue();
                         break;
 
 
                     default:
                         Console.Clear();
                         Console.Write("\n Enter a number from 1 to 6. \n");
-                        Console.Clear();
+                        EnterToContinue();
+                        //Console.Clear();
                         break;
                 }
                 //exit loop if exitMenu = true 
 
+                Console.Clear();
             } while (!exitMenu);
             #endregion
         }
@@ -126,15 +131,23 @@ namespace ConventionRegistration
         /// <summary>
         /// Sets the number of simulation runs.
         /// </summary>
-        private static void SetNumberOfSimulationRuns()
+        private static bool SetNumberOfSimulationRuns()
         {
             Console.Write("  How many times do you want to run the simulation with the current settings? ");
             string userInput = Console.ReadLine();
             if (int.TryParse(userInput, out numberOfSimulations))
+            {
                 Console.WriteLine("Number of simulations: " + numberOfSimulations);
+                EnterToContinue();
+                return true;
+            }
             else
+            {
                 Console.WriteLine("  Invalid number of simulations entered. ");
-            Console.ReadLine();
+                EnterToContinue();
+                return false;
+            }
+
         }
 
         /// <summary>
@@ -149,7 +162,7 @@ namespace ConventionRegistration
                 Console.WriteLine("Expected registration time = " + expectedRegistrationTime);
             else
                 Console.WriteLine("  Invalid expected registration time entered. ");
-            Console.ReadLine();
+            EnterToContinue();
         }
 
         #region Set Number Of Queues 
@@ -164,7 +177,7 @@ namespace ConventionRegistration
                 Console.WriteLine("Number of lines = " + numberOfQs);
             else
                 Console.WriteLine("  Invalid number of window lines entered. ");
-            Console.ReadLine();
+            EnterToContinue();
         }
         #endregion
 
@@ -181,7 +194,7 @@ namespace ConventionRegistration
                 Console.WriteLine("Number of hours of operation = " + hoursOpen);
             else
                 Console.WriteLine("  Invalid number of hours of operation entered. ");
-            Console.ReadLine();
+            EnterToContinue();
         }
         #endregion
 
@@ -198,7 +211,7 @@ namespace ConventionRegistration
                 Console.WriteLine("Expected total registrants = " + totalExpectedRegistrants);
             else
                 Console.WriteLine("  Invalid number of expected Registrants entered. ");
-            Console.ReadLine();
+            EnterToContinue();
         }
         #endregion
 
@@ -218,12 +231,22 @@ namespace ConventionRegistration
                        + "\t3. Set the number of windows\n"
                        + "\t4. Set the expected checkout duration\n"
                        + "\t5. Run the simulation\n"
-                       + "\t6. End the program\n\n"
+                       + "\t6. Run the simulation multiple times\n"
+                       + "\t7. End the program\n\n"
                        + "\t  Type the number of your choice from the menu: ";
 
             return menuString;
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// Press Enter to continue during runtime.
+        /// </summary>
+        public static void EnterToContinue()
+        {
+            Console.Write("Press enter to continue...");
+            Console.ReadLine();
+        }
         
         
 
