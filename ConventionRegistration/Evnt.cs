@@ -49,11 +49,11 @@ namespace ConventionRegistration
         }
 
 
-        public Evnt(DateTime currentTime, int lineChoice, int patronNum)
+        public Evnt(DateTime currentTime, int lineChoice, int patronNum, double expectedWindowTime)
         {
             Type = EVENTTYPE.ENTER;
             Time = currentTime;
-            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp(270000.0, 90000.0));
+            windowTime = new TimeSpan(0, 0, 0, 0, (int)NegExp((expectedWindowTime * 60000), 90000.0));
             LineChoice = lineChoice;
             Patron = patronNum;
             SetDepart();
